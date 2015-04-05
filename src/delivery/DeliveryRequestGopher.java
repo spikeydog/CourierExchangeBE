@@ -65,7 +65,7 @@ public class DeliveryRequestGopher extends AbstractGopher {
      */
     public DeliveryRequest get(int id) {
         // The query to execute
-        String query = "SELECT * FROM " + TABLE_NAME + "WHERE " + REQ_ID + "="
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + REQ_ID + "="
                 + id;
         // The raw list of results
         List<Object> rawList = null;

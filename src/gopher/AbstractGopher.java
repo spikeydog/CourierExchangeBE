@@ -17,7 +17,7 @@ import java.util.List;
  */
 public abstract class AbstractGopher {
     /** The name of the Java class to obtain a Class object for. */
-    private final String DRIVER_CLASS = "oracle.jdbc.driver.OracleDriver";
+    private final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
     /** The status code indicating a failure to locate the oracle driver. */
     public final int FAILURE = -1;
     /** The connection to use for interactions with the database. */
@@ -48,7 +48,7 @@ public abstract class AbstractGopher {
 
         try {
             connection = DriverManager.getConnection(
-                    "jdbc:oracle:thin:@cci-ora02.uncc.edu:1521:class", 
+                    "jdbc:mysql://192.168.56.103:3306/courier", 
                     "team4","qwe123");
             System.out.println("Successfully connected to database");
         } catch (SQLException ex) {
