@@ -6,6 +6,7 @@
 package launch;
 
 import common.DeliveryRequest;
+import common.Status;
 import delivery.DeliveryRequestGopher;
 
 /**
@@ -18,5 +19,9 @@ public class Launcher {
         DeliveryRequestGopher gopher = new DeliveryRequestGopher();
         DeliveryRequest dr = gopher.get(1);
         System.out.println(dr.getDescription());
+        
+        for (DeliveryRequest r : gopher.getList(Status.COMPLETE)) {
+            System.out.println(r.getStatus());
+        }
     }
 }

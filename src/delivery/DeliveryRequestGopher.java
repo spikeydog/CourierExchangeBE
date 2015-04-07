@@ -81,6 +81,19 @@ public class DeliveryRequestGopher extends AbstractGopher {
         return request;
     }
     
+    public List<DeliveryRequest> getList(Status status) {
+        // The list to return
+        List<DeliveryRequest> list = null;
+        // The query to execute
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE status = " 
+                + status.value;
+        
+        List<Object> rawList = super.executeQuery(query);
+        list = convert(rawList);
+        
+        return list;
+    }
+    
     private List<DeliveryRequest> convert(List<Object> list) {
         List<DeliveryRequest> converted = new ArrayList<DeliveryRequest>(
                 list.size());
