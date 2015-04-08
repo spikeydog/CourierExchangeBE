@@ -5,6 +5,7 @@ import common.Status;
 import gopher.AbstractGopher;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +20,19 @@ public class DeliveryRequestGopher extends AbstractGopher {
     public final static String TABLE_NAME = "delivery_request";
     public final static String BID_ID = "bid_id";
     public final static String CUST_ID = "customer_id";
-    public final static String REQ_ID = "delivery_request_id";
+    public final static String REQ_ID = "delivery_id";
     public final static String DESCR = "description";
     public final static String DROP_ADDR = "drop_off_address";
     public final static String DROP_TIME = "drop_off_time";
     public final static String PICKUP_ADDR = "pick_up_address";
     public final static String PICKUP_TIME = "pick_up_time";
+    public final static String POST_TIME = "post_time";
     public final static String REAL_DROP_TIME = "real_drop_off_time";
     public final static String REAL_PICKUP_TIME = "real_pick_up_time";
     public final static String STATUS = "status";
     public final static String WEIGHT = "weight";
+    public final static String NULL = "NULL";
+    public final static String DEFAULT = "DEFAULT";
     
     @Override
     protected DeliveryRequest parseResult(ResultSet results) {
@@ -81,17 +85,77 @@ public class DeliveryRequestGopher extends AbstractGopher {
         return request;
     }
     
-    public List<DeliveryRequest> getList(Status status) {
+    /**
+     * This method returns a list of <code>DeliveryRequest</code> objects, one
+     * for each record in the database with the given status.
+     * 
+     * @param status    the status of the delivery requests to list
+     * @return          a list of all matching <code>DeliveryRequest</code>s
+     */
+    public List<DeliveryRequest> getList(int status) {
         // The list to return
         List<DeliveryRequest> list = null;
         // The query to execute
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE status = " 
-                + status.value;
+                + status;
         
         List<Object> rawList = super.executeQuery(query);
         list = convert(rawList);
         
         return list;
+    }
+    
+    /**
+     * This method returns a list of <code>DeliveryRequest</code> objects, one
+     * for each record in the database with the given status that is associated
+     * with the given user id.
+     * 
+     * @param status    the status of the delivery requests to list
+     * @param userID    the primary key of the associated user
+     * @return 
+     */
+    public List<DeliveryRequest> getListByUserId(Status status, int userID) {
+        // The list to return
+        List<DeliveryRequest> list = null;
+        // The query to execute
+        String query = null; 
+        
+        // TODO ... not done, need bidding also
+        
+        List<Object> rawList = super.executeQuery(query);
+        list = convert(rawList);
+        
+        return list;
+    }
+    
+    public void insert(DeliveryRequest dr) {
+        // The query to execute
+        String query = " INSERT INTO delivery_request "
+                /*
+                + BID_ID + "," + CUST_ID + "," + REQ_ID + "," + DESCR + ","
+                + DROP_ADDR + "," + DROP_TIME + "," + PICKUP_ADDR + ","
+                + PICKUP_TIME + "," + POST_TIME + "," + REAL_DROP_TIME + "," 
+                + REAL_PICKUP_TIME + "," + STATUS + "," + WEIGHT 
+                */
+                + " VALUES("
+                + DEFAULT + ","
+                + NULL + "," 
+                + dr.getCustomerID() + "," 
+                + quote(dr.getDescription()) + "," 
+                + formatTime(dr.getDropOffTime()) + "," 
+                + quote(dr.getDropOffAddress()) + ","
+                + NULL + "," 
+                + formatTime(dr.getPickUpTime()) + "," 
+                + quote(dr.getPickUpAddress()) + ","
+                + NULL + "," 
+                + NULL + ","
+                + dr.getStatus().value 
+                + "," + dr.getWeight() 
+                + ")";
+        
+        System.out.println(query);
+        
+        super.executeQuery(query);
     }
     
     private List<DeliveryRequest> convert(List<Object> list) {
@@ -104,5 +168,18 @@ public class DeliveryRequestGopher extends AbstractGopher {
         }
         
         return converted;
+    }
+    
+    private String quote(String string) {
+        return "'" + string + "'";
+    }
+    
+    private String formatTime(Timestamp time) {
+        String string = time.toString();
+        String formatted = string.substring(0,string.lastIndexOf('.',string.length() - 1));
+        
+        System.out.println(formatted);
+        
+        return "'" + formatted + "'";
     }
 }

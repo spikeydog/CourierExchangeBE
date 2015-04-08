@@ -74,9 +74,14 @@ public abstract class AbstractGopher {
         try {
             connect();
             statement = connection.createStatement();
-            results = statement.executeQuery(query);
-            output = processResults(results);
-            results.close();
+            if (query.contains("SELECT")) {
+                results = statement.executeQuery(query);
+                output = processResults(results);
+                results.close();
+            } else {
+                statement.execute(query);
+            }
+            
             statement.close();
             disconnect();
 
