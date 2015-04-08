@@ -16,8 +16,11 @@ import java.sql.Timestamp;
  */
 public class DeliveryRequestCE implements DeliveryRequest, Serializable {
     private static final long serialVersionUID = 123L;
-    private int bidID;
-    private int customerID;
+    public static final int DEFAULT_BID_ID = 0;
+    public static final int DEFAULT_CUST_ID = 0;
+    public static final float DEFAULT_WEIGHT = Float.NaN;
+    private int bidID = DEFAULT_BID_ID;
+    private int customerID = DEFAULT_CUST_ID;
     private int deliveryRequestID;
     private String description;
     private String dropOffAddress;
@@ -28,7 +31,7 @@ public class DeliveryRequestCE implements DeliveryRequest, Serializable {
     private Timestamp realDropOffTime;
     private Timestamp realPickUpTime;
     private Status status;
-    private float weight;
+    private float weight = DEFAULT_WEIGHT;
 
     /**
      * @return the bidID

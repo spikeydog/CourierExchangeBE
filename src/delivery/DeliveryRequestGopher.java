@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -128,6 +129,12 @@ public class DeliveryRequestGopher extends AbstractGopher {
         return list;
     }
     
+    /**
+     * This method inserts the data associated with the given DeliveryRequest
+     * into the database
+     * 
+     * @param dr    the <code>DeliveryRequest</code> to insert into the database
+     */
     public void insert(DeliveryRequest dr) {
         // The query to execute
         String query = " INSERT INTO delivery_request "
@@ -154,6 +161,79 @@ public class DeliveryRequestGopher extends AbstractGopher {
                 + ")";
         
         System.out.println(query);
+        
+        super.executeQuery(query);
+    }
+    
+    public void update(DeliveryRequest dr) {
+        // String builder used to construct the query 
+        StringBuilder query = new StringBuilder();
+        // Fields that might be updated by the query
+        int deliveryID = dr.getDeliveryRequestID();
+        int bidID = dr.getBidID();
+        String description = dr.getDescription();
+        Timestamp dropOffTime = dr.getDropOffTime();
+        String dropOffAddress = dr.getDropOffAddress();
+        Timestamp realDropOffTime = dr.getRealDropOffTime();
+        Timestamp pickUpTime = dr.getPickUpTime();
+        String pickUpAddress = dr.getPickUpAddress();
+        Timestamp realPickUpTime = dr.getRealPickUpTime();
+        Timestamp postTime = dr.getPostTime();
+        Status status = dr.getStatus();
+        float weight = dr.getWeight();
+        // List containing each column=value pair for each updated attribute
+        List<String> params = new LinkedList<>();
+        
+        query.append("UPDATE ").append(TABLE_NAME).append(" SET ");
+        
+        // Include a column=value pair for each existing, non-default attribute
+        if (DeliveryRequestCE.DEFAULT_BID_ID != bidID) {
+            params.add(BID_ID + "=" + bidID);
+        }
+        if (null != description) {
+            params.add(DESCR + "=" + description);
+        }
+        if (null != dropOffTime) {
+            params.add(DROP_TIME + "=" + dropOffTime);
+        }
+        if (null != dropOffAddress) {
+            params.add(DROP_ADDR + "=" + dropOffAddress);
+        }
+        if (null != realDropOffTime) {
+            params.add(REAL_DROP_TIME + "=" + realDropOffTime);
+        }
+        if (null != pickUpTime) {
+            params.add(PICKUP_TIME + "=" + pickUpTime);
+        }
+        if (null != pickUpAddress) {
+            params.add(PICKUP_ADDR + "=" + pickUpAddress);
+        }
+        if (null != realPickUpTime) {
+            params.add(REAL_PICKUP_TIME + "=" + realPickUpTime);
+        }
+        if (null != postTime) {
+            params.add(POST_TIME + "=" + postTime);
+        }
+        if (null != status) {
+            params.add(STATUS + "=" + String.valueOf(status.value));
+        }
+        
+        if (weight == weight) {
+            params.add(WEIGHT + "=" + weight);
+        }
+        
+        query.append(params.toString().substring(1,params.toString().length() - 1));
+        query.append(" WHERE ").append(REQ_ID).append("=").append(deliveryID);
+        super.executeQuery(query.toString());
+    }
+    
+    /**
+     * This method deletes the delivery request record with the given id
+     * @param dr 
+     */
+    public void delete(int id) {
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + REQ_ID
+                + "=" + id;
         
         super.executeQuery(query);
     }

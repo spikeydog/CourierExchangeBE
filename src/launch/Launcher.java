@@ -10,6 +10,8 @@ import common.Status;
 import delivery.DeliveryRequestCE;
 import delivery.DeliveryRequestGopher;
 import java.sql.Timestamp;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class initializes necessary server objects within the application.
@@ -32,11 +34,25 @@ public class Launcher {
         
         gopher.insert(dr);
         
-        dr = gopher.get(1);
-        System.out.println(dr.getDescription());
         
         for (DeliveryRequest r : gopher.getList(Status.SAVED.value)) {
             System.out.println(r.getStatus());
         }
+        
+        dr = gopher.get(gopher.getList(Status.SAVED.value).get(0).getDeliveryRequestID());
+        System.out.println(dr.getDescription());
+        
+        dr = new DeliveryRequestCE();
+        dr.setDeliveryRequestID(gopher.getList(Status.SAVED.value).get(0).getDeliveryRequestID());
+        dr.setStatus(Status.IN_PROGRESS);
+        
+        gopher.update(dr);
+        for (DeliveryRequest r : gopher.getList(Status.IN_PROGRESS.value)) {
+            System.out.println(r.getStatus());
+        }
+        
+        gopher.delete(gopher.getList(Status.SAVED.value).get(0).getDeliveryRequestID());
+        
+        
     }
 }
