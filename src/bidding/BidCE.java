@@ -5,7 +5,7 @@
  */
 package bidding;
 
-import common.Bid;
+import common.bidding.Bid;
 import java.io.Serializable;
 import java.sql.Timestamp;
 

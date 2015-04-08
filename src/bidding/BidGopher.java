@@ -5,8 +5,8 @@
  */
 package bidding;
 
-import common.Bid;
-import common.DeliveryRequest;
+import common.bidding.Bid;
+import common.delivery.DeliveryRequest;
 import gopher.AbstractGopher;
 import java.sql.ResultSet;
 import java.sql.SQLException;

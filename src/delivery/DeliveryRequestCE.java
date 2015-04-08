@@ -5,8 +5,8 @@
  */
 package delivery;
 
-import common.DeliveryRequest;
-import common.Status;
+import common.delivery.DeliveryRequest;
+import common.delivery.Status;
 import java.io.Serializable;
 import java.sql.Timestamp;
 

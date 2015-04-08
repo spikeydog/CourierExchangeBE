@@ -7,9 +7,9 @@ package launch;
 
 import bidding.BidCE;
 import bidding.BidGopher;
-import common.Bid;
-import common.DeliveryRequest;
-import common.Status;
+import common.bidding.Bid;
+import common.delivery.DeliveryRequest;
+import common.delivery.Status;
 import delivery.DeliveryRequestCE;
 import delivery.DeliveryRequestGopher;
 import java.sql.Timestamp;

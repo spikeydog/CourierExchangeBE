@@ -1,7 +1,7 @@
 package delivery;
 
-import common.DeliveryRequest;
-import common.Status;
+import common.delivery.DeliveryRequest;
+import common.delivery.Status;
 import gopher.AbstractGopher;
 import java.sql.ResultSet;
 import java.sql.SQLException;
