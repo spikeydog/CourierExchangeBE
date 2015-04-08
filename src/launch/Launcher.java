@@ -5,13 +5,14 @@
  */
 package launch;
 
+import bidding.BidCE;
+import bidding.BidGopher;
+import common.Bid;
 import common.DeliveryRequest;
 import common.Status;
 import delivery.DeliveryRequestCE;
 import delivery.DeliveryRequestGopher;
 import java.sql.Timestamp;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class initializes necessary server objects within the application.
@@ -53,6 +54,10 @@ public class Launcher {
         
         gopher.delete(gopher.getList(Status.SAVED.value).get(0).getDeliveryRequestID());
         
-        
+        BidGopher g2 = new BidGopher();
+        Bid bid = new BidCE(23,23,new Timestamp(System.currentTimeMillis()), 
+                new Timestamp(System.currentTimeMillis()), (float) 10.0, false, false);
+        g2.insert(bid);
+        System.out.println(g2.get(1)); 
     }
 }

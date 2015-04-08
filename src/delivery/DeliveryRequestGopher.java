@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import util.Formatter;
 
 /**
  * This class handles the creation and processing of database queries related to
@@ -17,7 +18,7 @@ import java.util.List;
  * @author sedog
  */
 public class DeliveryRequestGopher extends AbstractGopher {
-    // Indeces for each database column so thtey only need to be set once
+    // Names for each database column so thtey only need to be set once
     public final static String TABLE_NAME = "delivery_request";
     public final static String BID_ID = "bid_id";
     public final static String CUST_ID = "customer_id";
@@ -148,12 +149,12 @@ public class DeliveryRequestGopher extends AbstractGopher {
                 + DEFAULT + ","
                 + NULL + "," 
                 + dr.getCustomerID() + "," 
-                + quote(dr.getDescription()) + "," 
-                + formatTime(dr.getDropOffTime()) + "," 
-                + quote(dr.getDropOffAddress()) + ","
+                + Formatter.quote(dr.getDescription()) + "," 
+                + Formatter.formatTime(dr.getDropOffTime()) + "," 
+                + Formatter.quote(dr.getDropOffAddress()) + ","
                 + NULL + "," 
-                + formatTime(dr.getPickUpTime()) + "," 
-                + quote(dr.getPickUpAddress()) + ","
+                + Formatter.formatTime(dr.getPickUpTime()) + "," 
+                + Formatter.quote(dr.getPickUpAddress()) + ","
                 + NULL + "," 
                 + NULL + ","
                 + dr.getStatus().value 
@@ -248,18 +249,5 @@ public class DeliveryRequestGopher extends AbstractGopher {
         }
         
         return converted;
-    }
-    
-    private String quote(String string) {
-        return "'" + string + "'";
-    }
-    
-    private String formatTime(Timestamp time) {
-        String string = time.toString();
-        String formatted = string.substring(0,string.lastIndexOf('.',string.length() - 1));
-        
-        System.out.println(formatted);
-        
-        return "'" + formatted + "'";
     }
 }
