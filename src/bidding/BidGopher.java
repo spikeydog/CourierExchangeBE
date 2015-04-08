@@ -6,6 +6,7 @@
 package bidding;
 
 import common.Bid;
+import common.DeliveryRequest;
 import gopher.AbstractGopher;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -123,5 +124,59 @@ public class BidGopher extends AbstractGopher {
         }
         
         return converted;
+    }
+    
+    /**
+     * This method deletes the bid record with the given id
+     * @param id    the primary key of the record to delete 
+     */
+    public void delete(int id) {
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + BID_ID
+                + "=" + id;
+        
+        super.executeQuery(query);
+    }
+    
+    /**
+     * This method returns a list of <code>Bid</code> objects, one
+     * for each record in the database with the given status that is associated
+     * with the given delivery request id.
+     * 
+     * @param requestID primary key of the <code>DeliveryRequest</code> to 
+     *                  obtain a list of <code>Bid</code> objects for
+     * @return          a list of all of <code>Bid</code> objects placed on the
+     *                  given <code>DeliveryRequest</code> id
+     */
+    public List<Bid> getList(int requestID) {
+        // The list to return
+        List<Bid> list = null;
+        // The query to execute
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + REQ_ID 
+                + "=" + requestID; 
+        
+        List<Object> rawList = super.executeQuery(query);
+        list = convert(rawList);
+        
+        return list;
+    }
+    
+    /**
+     * Returns a list of <code>Bid</code> associated with the given user id.
+     * 
+     * @param userID    the primary key of the user for which bids will be listed
+     * @return          a list of all <code>Bid</code> objects created by the
+     *                  user with the given userID
+     */
+    public List<Bid> getListByUserID(int userID) {
+        // The list to return
+        List<Bid> list = null;
+        // The query to execute
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COURIER_ID 
+                + "=" + userID; 
+        
+        List<Object> rawList = super.executeQuery(query);
+        list = convert(rawList);
+        
+        return list;
     }
 }

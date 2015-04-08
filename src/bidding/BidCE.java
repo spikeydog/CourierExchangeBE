@@ -14,6 +14,7 @@ import java.sql.Timestamp;
  * @author sedog
  */
 public class BidCE implements Bid, Serializable {
+    private static final long serialVersionUID = 1234L;
     private int bidID;
     private int courierID;
     private int deliveryRequestID;

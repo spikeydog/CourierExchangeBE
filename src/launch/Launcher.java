@@ -52,12 +52,17 @@ public class Launcher {
             System.out.println(r.getStatus());
         }
         
-        gopher.delete(gopher.getList(Status.SAVED.value).get(0).getDeliveryRequestID());
+        if (0 < gopher.getList(Status.SAVED.value).size()) {
+            gopher.delete(gopher.getList(Status.SAVED.value).get(0).getDeliveryRequestID());
+        }
         
         BidGopher g2 = new BidGopher();
         Bid bid = new BidCE(23,23,new Timestamp(System.currentTimeMillis()), 
                 new Timestamp(System.currentTimeMillis()), (float) 10.0, false, false);
         g2.insert(bid);
-        System.out.println(g2.get(1)); 
+        System.out.println(g2.get(1));
+                
+        System.out.println(g2.getList(23).get(0));
+        System.out.println(g2.getListByUserID(23).get(0));
     }
 }
