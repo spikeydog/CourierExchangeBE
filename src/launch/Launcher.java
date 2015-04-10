@@ -5,6 +5,7 @@
  */
 package launch;
 
+import bidding.BidAgent;
 import bidding.BidCE;
 import bidding.BidGopher;
 import common.bidding.Bid;
@@ -21,6 +22,7 @@ import java.sql.Timestamp;
  */
 public class Launcher {
     public static void main(String[] args) {
+        /*
         // For now, this just instantiates things to test
         DeliveryRequestGopher gopher = new DeliveryRequestGopher();
         
@@ -54,7 +56,6 @@ public class Launcher {
                 System.out.println(r.getStatus());
             }
 
-
             if (0 < gopher.getList(Status.SAVED.value).size()) {
                 gopher.delete(gopher.getList(Status.SAVED.value).get(0).getDeliveryRequestID());
 
@@ -76,5 +77,15 @@ public class Launcher {
 
             }
         } catch (SQLException ex) {}
+        */
+        BidAgent bidAgent = new BidAgent();
+        Bid bid1 = new BidCE();
+        bid1.setDeliveryRequestID(21);
+        bid1.setCourierID(1);
+        bid1.setPickUpTime(new Timestamp(System.currentTimeMillis() - 4000000));
+        bid1.setDropOffTime(new Timestamp(System.currentTimeMillis() + 60000));
+        bid1.setFee((float) 10.00);
+        System.out.println("First insert: " + bidAgent.insert(bid1)); 
+        System.out.println("Second insert: " + bidAgent.insert(bid1)); 
     }
 }

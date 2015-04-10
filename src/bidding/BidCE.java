@@ -14,14 +14,16 @@ import java.sql.Timestamp;
  * @author sedog
  */
 public class BidCE implements Bid, Serializable {
+    public final static int DEFAULT_COURIER_ID = 0;
+    public final static int DEFAULT_REQ_ID = 0;
     public final static float DEFAULT_FEE = Float.NaN;
     private static final long serialVersionUID = 1234L;
     private int bidID;
-    private int courierID;
-    private int deliveryRequestID;
+    private int courierID = BidCE.DEFAULT_COURIER_ID;
+    private int deliveryRequestID = BidCE.DEFAULT_REQ_ID;
     private Timestamp dropOffTime;
     private Timestamp pickUpTime;
-    private float fee = DEFAULT_FEE;
+    private float fee = BidCE.DEFAULT_FEE;
     private boolean isPendingUpdate;
     private boolean isAccepted;
     

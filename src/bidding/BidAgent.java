@@ -6,6 +6,10 @@
 package bidding;
 
 import common.bidding.Bid;
+import common.delivery.DeliveryRequest;
+import delivery.DeliveryRequestCE;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,18 +44,104 @@ public class BidAgent {
         Bid listedBid = null;
         
         // Obtain a list of all bids on the same delivery request
-        bids = gopher.getList(bid.getDeliveryRequestID());
+        try {
+            bids = gopher.getList(bid.getDeliveryRequestID());
+        } catch (SQLException ex) {
+            System.out.println("Unable to retrieve list from database");
+        }
+        
         // Determine if any bid was created by the same courier
+        finder = bids.iterator();
         while (finder.hasNext() && isUnique) {
             listedBid = finder.next();
             isUnique = !(listedBid.getCourierID() == bid.getCourierID());
         }
         
         // Only insert the new bid of it is unique to the request/courier
-        if (isUnique) {
-            gopher.insert(bid);
+        if (isUnique && isValidInsert(bid)) {
+            try {
+                gopher.insert(bid);
+                isSuccessful = true;
+            } catch (SQLException ex) {
+                System.out.println("Unable to insert new bid");
+            }
+        }
+            
+        return isSuccessful;
+    }
+    
+    // DEBUG test data
+    private static final DeliveryRequest TEST_DATA = new DeliveryRequestCE();
+    static {
+        TEST_DATA.setDeliveryRequestID(23);
+        TEST_DATA.setPostTime(new Timestamp(System.currentTimeMillis() - 36000 * 3));
+        TEST_DATA.setPickUpTime(new Timestamp(System.currentTimeMillis() - 36000 * 2));
+        TEST_DATA.setDropOffTime(new Timestamp(System.currentTimeMillis() - 36000));
+        TEST_DATA.setBidID(DeliveryRequestCE.DEFAULT_BID_ID);
+    };
+    
+    /**
+     * Helper method to insert() that checks the state of the given <code>Bid
+     * </code> is conditionally valid.
+     * 
+     * @param bid   the <code>Bid</code> containing the record to insert
+     * @return      <code>true</code> if <code>bid</code> is valid to insert
+     */
+    private boolean isValidInsert(final Bid bid) {
+        // Flag indicating the given bid is valid for an insert op
+        boolean isValid = false;
+        // Flag indicating the bid contains all needed data
+        boolean isPopulated = false;
+        // Empty delivery request for agent query
+        DeliveryRequest delivery = new DeliveryRequestCE();
+        // Agent responsible for delivery request access
+        /*
+        DeliveryRequestAgent reqAgent = new DeliveryRequestAGent();
+        */
+        
+        if (null != bid 
+                && null != bid.getDropOffTime() 
+                && null != bid.getPickUpTime() 
+                && bid.getFee() == bid.getFee()
+                && BidCE.DEFAULT_COURIER_ID != bid.getCourierID()
+                && BidCE.DEFAULT_REQ_ID != bid.getDeliveryRequestID()) {
+            isPopulated = true;
         }
         
-        return isSuccessful;
+        if (isPopulated) {
+            delivery.setDeliveryRequestID(bid.getDeliveryRequestID());
+            //delivery = reqAgent.get(delivery);
+            delivery = TEST_DATA; // Dummy data for testing
+            isValid = (null != delivery 
+                    && DeliveryRequestCE.DEFAULT_BID_ID == delivery.getBidID()
+                    && delivery.getPostTime().before(bid.getPickUpTime())
+                    && delivery.getPostTime().before(bid.getDropOffTime())
+                    && bid.getPickUpTime().before(bid.getDropOffTime())
+                    && 0 <= bid.getFee());
+        }
+        System.out.println("DEBUG: Bid invalid for insert? " + isValid);
+        return isValid;
+    }
+    
+    /**
+     * Obtains and returns the bid record matching the given <code>Bid</code>
+     * @param bid   the <code>Bid</code> matching the record to retrieve
+     * @return      a fresh copy of the requested bid as a <code>Bid</code>
+     */
+    public Bid get(final Bid bid) {
+        // Flag indicating success of the requested database operation
+        boolean isSuccessful = false;
+        // BidGopher that will interact with the database
+        BidGopher gopher = new BidGopher();
+        // The retrieved bid record
+        Bid record = null;
+        
+        try {
+            record = gopher.get(bid.getBidID());
+        } catch (SQLException ex) {
+            System.out.println("Requested bid does not exist");
+        }
+        
+        return record;
     }
 }
