@@ -10,6 +10,7 @@ import common.delivery.DeliveryRequest;
 import gopher.AbstractGopher;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -178,5 +179,47 @@ public class BidGopher extends AbstractGopher {
         list = convert(rawList);
         
         return list;
+    }
+    
+    /**
+     * Updates an exiting bid record with data extracted from the
+     * given <code>Bid</code>.
+     * 
+     * @param bid   <code>Bid</code> containing updates
+     */
+    public void update(Bid bid) {
+        // String builder used to construct the query 
+        StringBuilder query = new StringBuilder();
+        // Fields that might be updated by the query
+        int bidID = bid.getBidID();
+        Timestamp dropOffTime = bid.getDropOffTime();
+        Timestamp pickUpTime = bid.getPickUpTime();
+        float fee = bid.getFee();
+        boolean isPendingUpdate = bid.isPendingUpdate();
+        boolean isAccepted = bid.isAccepted();
+        // List containing each column=value pair for each updated attribute
+        List<String> params = new LinkedList<>();
+        
+        query.append("UPDATE ").append(BidGopher.TABLE_NAME).append(" SET ");
+        
+        // Include a column=value pair for each existing, non-default attribute
+        if (null != dropOffTime) {
+            params.add(BidGopher.DROP_TIME + "=" + Formatter.formatTime(dropOffTime));
+        }
+        if (null != pickUpTime) {
+            params.add(BidGopher.PICKUP_TIME + "=" + Formatter.formatTime(pickUpTime));
+        }
+        // These are always going to be set since testing for a default or null
+        // is not possible without using Boolean instead, which is unnecessary
+        params.add(BidGopher.PENDING + "=" + isPendingUpdate);
+        params.add(BidGopher.ACCEPTED + "=" + isAccepted);
+        
+        if (fee == fee) {
+            params.add(BidGopher.FEE + "=" + String.valueOf(fee));
+        }
+        
+        query.append(params.toString().substring(1,params.toString().length() - 1));
+        query.append(" WHERE ").append(BidGopher.BID_ID).append("=").append(bidID);
+        super.executeQuery(query.toString());
     }
 }

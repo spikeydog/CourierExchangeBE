@@ -63,6 +63,12 @@ public class Launcher {
         System.out.println(g2.get(1));
                 
         System.out.println(g2.getList(23).get(0));
-        System.out.println(g2.getListByUserID(23).get(0));
+        System.out.println(g2.getListByUserID(23).get(0).getFee());
+        
+        Bid copy = g2.getList(23).get(0).clone();
+        System.out.println(copy.getFee());
+        copy.setFee((float) 100.00);
+        g2.update(copy);
+        System.out.println(g2.getListByUserID(23).get(0).getFee());
     }
 }

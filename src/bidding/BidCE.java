@@ -14,13 +14,14 @@ import java.sql.Timestamp;
  * @author sedog
  */
 public class BidCE implements Bid, Serializable {
+    public final static float DEFAULT_FEE = Float.NaN;
     private static final long serialVersionUID = 1234L;
     private int bidID;
     private int courierID;
     private int deliveryRequestID;
     private Timestamp dropOffTime;
     private Timestamp pickUpTime;
-    private float fee;
+    private float fee = DEFAULT_FEE;
     private boolean isPendingUpdate;
     private boolean isAccepted;
     
@@ -160,5 +161,38 @@ public class BidCE implements Bid, Serializable {
      */
     public void setIsAccepted(boolean isAccepted) {
         this.isAccepted = isAccepted;
+    }
+    
+    /**
+     * Duplicates the non-unique attributes of this <code>Bid</code> in a
+     * new <code>Bid</code> and returns that copy.
+     */
+    @Override
+    public Bid clone() {
+        // The duplicate bid to return
+        Bid castClone = null;
+        // The intermediate cloned object
+        Object clone = null;
+        
+        try {
+            clone = super.clone();
+            if (clone instanceof Bid) {
+                castClone = (Bid) clone;
+            }
+            
+        } catch (CloneNotSupportedException ex) {
+           // Never should happen here 
+        }
+        
+        castClone.setBidID(this.getBidID());
+        castClone.setCourierID(this.getCourierID());
+        castClone.setDeliveryRequestID(this.getDeliveryRequestID());
+        castClone.setDropOffTime(this.getDropOffTime());
+        castClone.setPickUpTime(this.getPickUpTime());
+        castClone.setFee(this.getFee());
+        castClone.setIsPendingUpdate(this.isPendingUpdate());
+        castClone.setIsAccepted(this.isAccepted());
+        
+        return castClone;
     }
 }
