@@ -197,4 +197,28 @@ public class BidCE implements Bid, Serializable {
         
         return castClone;
     }
+    
+    @Override
+    public boolean equals(final Object other) {
+        // Flag indicating this bid is equal to the other object
+        boolean isEqual = false;
+        // The given object cast into a Bid, if possible
+        Bid target = null;
+        
+        if (this == other) {
+            isEqual = true;
+        } else if (other instanceof Bid) {
+            target = (Bid) other;
+            isEqual = (this.getBidID() == target.getBidID()
+                    && this.getCourierID() == target.getCourierID()
+                    && this.getDeliveryRequestID() == target.getDeliveryRequestID()
+                    && this.getDropOffTime() == target.getDropOffTime()
+                    && this.getPickUpTime() == target.getPickUpTime()
+                    && this.getFee() == target.getFee()
+                    && this.isPendingUpdate() == target.isPendingUpdate()
+                    && this.isAccepted() == target.isAccepted());
+        }
+        
+        return isEqual;
+    }
 }

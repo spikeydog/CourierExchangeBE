@@ -80,12 +80,19 @@ public class Launcher {
         */
         BidAgent bidAgent = new BidAgent();
         Bid bid1 = new BidCE();
-        bid1.setDeliveryRequestID(21);
-        bid1.setCourierID(1);
-        bid1.setPickUpTime(new Timestamp(System.currentTimeMillis() - 4000000));
+        bid1.setDeliveryRequestID(18);
+        bid1.setCourierID(2);
+        bid1.setPickUpTime(new Timestamp(System.currentTimeMillis()));
         bid1.setDropOffTime(new Timestamp(System.currentTimeMillis() + 60000));
         bid1.setFee((float) 10.00);
         System.out.println("First insert: " + bidAgent.insert(bid1)); 
         System.out.println("Second insert: " + bidAgent.insert(bid1)); 
+        Bid bid2 = new BidCE();
+        bid2.setBidID(11);
+        System.out.println("Get inserted bid? " + bidAgent.get(bid2).equals(bid1));
+        DeliveryRequest req1 = new DeliveryRequestCE(); req1.setDeliveryRequestID(23);
+        for (Bid bid : bidAgent.getList(req1)) {
+            System.out.println(bid.getBidID());
+        }
     }
 }

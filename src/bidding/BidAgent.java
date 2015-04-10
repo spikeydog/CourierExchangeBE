@@ -141,7 +141,22 @@ public class BidAgent {
         } catch (SQLException ex) {
             System.out.println("Requested bid does not exist");
         }
-        
+        System.out.println(null==record? "Null!!" : "OK!");
         return record;
+    }
+    
+    public List<Bid> getList(final DeliveryRequest request) {
+        // List of Bids to return
+        List<Bid> bids = null;
+        // The gopher to interact with the database
+        BidGopher gopher = new BidGopher();
+        
+        try {
+            bids = gopher.getList(request.getDeliveryRequestID());
+        } catch (SQLException ex) {
+            System.out.println("Unable to get the bids list");
+        }
+        System.out.println("Matching bids: " + bids.size());
+        return bids;
     }
 }
