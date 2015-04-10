@@ -63,13 +63,15 @@ public class DeliveryRequestGopher extends AbstractGopher {
     
     /**
      * Retrieves and returns the <code>DeliveryRequest</code> identified by the
-     * given primary key
+     * given primary key. Returns <code>null</code> if no such delivery_request
+     * record exists.
      * 
      * @param id    the primary key of the record to retrieve
      * @return      a <code>DeliveryRequest</code> populated with data retrieved
      *              from the database
+     * @throws SQLException if the database operation failed
      */
-    public DeliveryRequest get(int id) {
+    public DeliveryRequest get(int id) throws SQLException {
         // The query to execute
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + REQ_ID + "="
                 + id;
@@ -82,7 +84,9 @@ public class DeliveryRequestGopher extends AbstractGopher {
        
         rawList = super.executeQuery(query);
         castList = convert(rawList);
-        request = castList.get(0);
+        
+        // Guarantee the list is not empty before trying to get element
+        request = (0 < castList.size())? castList.get(0) : null;  
         
         return request;
     }
@@ -93,8 +97,9 @@ public class DeliveryRequestGopher extends AbstractGopher {
      * 
      * @param status    the status of the delivery requests to list
      * @return          a list of all matching <code>DeliveryRequest</code>s
+     * @throws SQLException if the operation failed
      */
-    public List<DeliveryRequest> getList(int status) {
+    public List<DeliveryRequest> getList(int status) throws SQLException {
         // The list to return
         List<DeliveryRequest> list = null;
         // The query to execute
@@ -114,9 +119,12 @@ public class DeliveryRequestGopher extends AbstractGopher {
      * 
      * @param status    the status of the delivery requests to list
      * @param userID    the primary key of the associated user
-     * @return 
+     * @return          <code>List</code> of all matching <code>DeliveryRequest
+     *                  </code>s
+     * @throws SQLException if the operation failed
      */
-    public List<DeliveryRequest> getListByUserId(Status status, int userID) {
+    public List<DeliveryRequest> getListByUserId(Status status, int userID) 
+            throws SQLException {
         // The list to return
         List<DeliveryRequest> list = null;
         // The query to execute
@@ -135,8 +143,9 @@ public class DeliveryRequestGopher extends AbstractGopher {
      * into the database
      * 
      * @param dr    the <code>DeliveryRequest</code> to insert into the database
+     * @throws SQLException if the operation failed
      */
-    public void insert(DeliveryRequest dr) {
+    public void insert(DeliveryRequest dr) throws SQLException {
         // The query to execute
         String query = " INSERT INTO delivery_request "
                 /*
@@ -166,7 +175,14 @@ public class DeliveryRequestGopher extends AbstractGopher {
         super.executeQuery(query);
     }
     
-    public void update(DeliveryRequest dr) {
+    /**
+     * Updates the delivery_request record with the data from the given <code>
+     * DeliveryRequest</code>
+     * @param dr    the <code>DeliveryRequest</code> containing the data to 
+     *              update 
+     * @throws SQLException 
+     */
+    public void update(DeliveryRequest dr) throws SQLException {
         // String builder used to construct the query 
         StringBuilder query = new StringBuilder();
         // Fields that might be updated by the query
@@ -231,14 +247,23 @@ public class DeliveryRequestGopher extends AbstractGopher {
     /**
      * This method deletes the delivery request record with the given id
      * @param dr 
+     * @throws SQLException if the operation failed
      */
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
         String query = "DELETE FROM " + TABLE_NAME + " WHERE " + REQ_ID
                 + "=" + id;
         
         super.executeQuery(query);
     }
     
+    /**
+     * Helper method that converts the list of <code>Object</code> returned by a
+     * query to a list of <code>DeliveryRequest</code>.
+     * 
+     * @param list  the <code>List</code> of <code>Object</code> to convert
+     * @return      <code>List</code> of <code>DeliveryRequest</code> as cast
+     *              from <code>list</code>
+     */
     private List<DeliveryRequest> convert(List<Object> list) {
         List<DeliveryRequest> converted = new ArrayList<DeliveryRequest>(
                 list.size());

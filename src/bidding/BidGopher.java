@@ -34,8 +34,14 @@ public class BidGopher extends AbstractGopher {
     public final static String NULL = "NULL";
     public final static String DEFAULT = "DEFAULT";
     
+    /**
+     * 
+     * @param results
+     * @return
+     * @throws SQLException 
+     */
     @Override
-    protected Bid parseResult(ResultSet results) {
+    protected Bid parseResult(ResultSet results) throws SQLException {
         Bid bid = new BidCE();
         
         try {
@@ -49,7 +55,7 @@ public class BidGopher extends AbstractGopher {
             bid.setIsAccepted(results.getBoolean(ACCEPTED));
         } catch (SQLException ex) {
             System.out.println("Unable to read from resultSet");
-            ex.printStackTrace();
+            throw ex;
         }
         
         return bid;
@@ -59,8 +65,9 @@ public class BidGopher extends AbstractGopher {
      * Inserts a new record into the bid table using the data in the given Bid
      * 
      * @param bid   the bid containing the record data
+     * @throws SQLException if the operation failed
      */
-    public void insert(Bid bid) {
+    public void insert(Bid bid) throws SQLException {
         // The query to execute
         StringBuilder query = new StringBuilder();
         // List of all of the data values to insert
@@ -85,13 +92,14 @@ public class BidGopher extends AbstractGopher {
     
     /**
      * Returns a <code>Bid</code> populated by the data from the bid record with
-     * the given id
+     * the given id. Returns <code>null</code> if no such bid exists.
      * 
      * @param id    the bid_id of the record to return as a <code>Bid</code>
      * @return      a <code>Bid</code> representing the database record with the
      *              given id
+     * @throws SQLException if the operation failed
      */
-    public Bid get(int id) {
+    public Bid get(int id) throws SQLException {
         // The query to execute
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + BID_ID + "="
                 + id;
@@ -104,7 +112,9 @@ public class BidGopher extends AbstractGopher {
        
         rawList = super.executeQuery(query);
         castList = convert(rawList);
-        request = castList.get(0);
+        
+        // Guarantee the list is not empty before trying to get element
+        request = (0 < castList.size())? castList.get(0) : null;  
         
         return request;
     }
@@ -130,8 +140,9 @@ public class BidGopher extends AbstractGopher {
     /**
      * This method deletes the bid record with the given id
      * @param id    the primary key of the record to delete 
+     * @throws SQLException if the operation failed
      */
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
         String query = "DELETE FROM " + TABLE_NAME + " WHERE " + BID_ID
                 + "=" + id;
         
@@ -147,8 +158,9 @@ public class BidGopher extends AbstractGopher {
      *                  obtain a list of <code>Bid</code> objects for
      * @return          a list of all of <code>Bid</code> objects placed on the
      *                  given <code>DeliveryRequest</code> id
+     * @throws SQLException if the operation failed
      */
-    public List<Bid> getList(int requestID) {
+    public List<Bid> getList(int requestID) throws SQLException {
         // The list to return
         List<Bid> list = null;
         // The query to execute
@@ -167,8 +179,9 @@ public class BidGopher extends AbstractGopher {
      * @param userID    the primary key of the user for which bids will be listed
      * @return          a list of all <code>Bid</code> objects created by the
      *                  user with the given userID
+     * @throws SQLException if the operation failed
      */
-    public List<Bid> getListByUserID(int userID) {
+    public List<Bid> getListByUserID(int userID) throws SQLException {
         // The list to return
         List<Bid> list = null;
         // The query to execute
@@ -186,8 +199,9 @@ public class BidGopher extends AbstractGopher {
      * given <code>Bid</code>.
      * 
      * @param bid   <code>Bid</code> containing updates
+     * @throws SQLException if the operation failed
      */
-    public void update(Bid bid) {
+    public void update(Bid bid) throws SQLException {
         // String builder used to construct the query 
         StringBuilder query = new StringBuilder();
         // Fields that might be updated by the query
