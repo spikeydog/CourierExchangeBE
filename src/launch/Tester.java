@@ -88,7 +88,7 @@ public class Tester {
         System.out.println("First insert: " + bidAgent.insert(bid1)); 
         System.out.println("Second insert: " + bidAgent.insert(bid1)); 
         Bid bid2 = new BidCE();
-        bid2.setBidID(11);
+        bid2.setBidID(12);
         System.out.println("Get inserted bid? " + bidAgent.get(bid2).equals(bid1));
         DeliveryRequest req1 = new DeliveryRequestCE(); req1.setDeliveryRequestID(23);
         for (Bid bid : bidAgent.getList(req1)) {
