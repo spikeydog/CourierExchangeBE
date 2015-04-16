@@ -6,7 +6,9 @@
 package bidding;
 
 import common.bidding.Bid;
+import common.bidding.BidCE;
 import common.delivery.DeliveryRequest;
+import common.util.code.bidding.ExitCode;
 import delivery.DeliveryRequestCE;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -29,9 +31,9 @@ public class BidAgent {
      * @param bid
      * @return <code>true</code> if the operation was successful
      */
-    public boolean insert(final Bid bid) {
-        // Flag indicating success of the requested database operation
-        boolean isSuccessful = false;
+    public ExitCode insert(final Bid bid) {
+        // Enum indicating success of the requested database operation
+        ExitCode code = ExitCode.FAILURE;
         // BidGopher that will interact with the database
         BidGopher gopher = new BidGopher();
         // List of all bids on the same delivery request
@@ -61,13 +63,14 @@ public class BidAgent {
         if (isUnique && isValidInsert(bid)) {
             try {
                 gopher.insert(bid);
-                isSuccessful = true;
+                code = ExitCode.SUCCESS;
             } catch (SQLException ex) {
                 System.out.println("Unable to insert new bid");
+                code = ExitCode.SQL_EXCEPTION;
             }
         }
             
-        return isSuccessful;
+        return code;
     }
     
     // DEBUG test data

@@ -6,7 +6,8 @@
 package launch;
 
 import bidding.BidAgent;
-import bidding.BidCE;
+import common.bidding.BidCE;
+import bidding.BidServer;
 import common.bidding.Bid;
 import common.delivery.DeliveryRequest;
 import delivery.DeliveryRequestCE;
@@ -61,7 +62,7 @@ public class Tester {
 
 
             BidGopher g2 = new BidGopher();
-            Bid bid = new BidCE(23,23,new Timestamp(System.currentTimeMillis()), 
+            Bid bid = new Foo(23,23,new Timestamp(System.currentTimeMillis()), 
                     new Timestamp(System.currentTimeMillis()), (float) 10.0, false, false);
             g2.insert(bid);
             System.out.println(g2.get(1));
@@ -79,13 +80,14 @@ public class Tester {
         } catch (SQLException ex) {}
         */
         BidAgent bidAgent = new BidAgent();
+        BidServer server = new BidServer();
         Bid bid1 = new BidCE();
         bid1.setDeliveryRequestID(17);
         bid1.setCourierID(2);
         bid1.setPickUpTime(new Timestamp(System.currentTimeMillis()));
         bid1.setDropOffTime(new Timestamp(System.currentTimeMillis() + 60000));
         bid1.setFee((float) 10.00);
-        System.out.println("First insert: " + bidAgent.insert(bid1)); 
+        System.out.println("First insert: " + bidAgent.insert(bid1).toString()); 
         System.out.println("Second insert: " + bidAgent.insert(bid1)); 
         Bid bid2 = new BidCE();
         bid2.setBidID(11);
