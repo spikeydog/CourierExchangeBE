@@ -6,7 +6,7 @@
 package bidding;
 
 import common.bidding.Bid;
-import common.delivery.DeliveryRequest;
+import common.bidding.BidCE;
 import gopher.AbstractGopher;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -166,7 +166,7 @@ public class BidGopher extends AbstractGopher {
         // The query to execute
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + REQ_ID 
                 + "=" + requestID; 
-        
+        System.out.println("Query=" + query);
         List<Object> rawList = super.executeQuery(query);
         list = convert(rawList);
         
