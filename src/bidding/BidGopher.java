@@ -166,7 +166,7 @@ public class BidGopher extends AbstractGopher {
         // The query to execute
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + REQ_ID 
                 + "=" + requestID; 
-        
+        System.out.println("Query=" + query);
         List<Object> rawList = super.executeQuery(query);
         list = convert(rawList);
         

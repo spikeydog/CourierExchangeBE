@@ -7,6 +7,8 @@ package bidding;
 
 import common.bidding.Bid;
 import common.bidding.BidCE;
+import common.bidding.SortCriterion;
+import common.bidding.SortOrder;
 import common.delivery.DeliveryRequest;
 import common.util.code.bidding.ExitCode;
 import delivery.DeliveryRequestCE;
@@ -156,18 +158,24 @@ public class BidAgent {
         return record;
     }
     
-    public List<Bid> getList(final DeliveryRequest request) {
+    public List<Bid> getList(final DeliveryRequest request, 
+            SortCriterion criterion, SortOrder order) {
         // List of Bids to return
         List<Bid> bids = null;
         // The gopher to interact with the database
         BidGopher gopher = new BidGopher();
         
+        // We should check to see if the DR still shows as posted... 
+        System.out.println("BidAgent: getList called");
         try {
             bids = gopher.getList(request.getDeliveryRequestID());
         } catch (SQLException ex) {
             System.out.println("Unable to get the bids list");
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         System.out.println("Matching bids: " + bids.size());
+        
         return bids;
     }
 }
