@@ -50,6 +50,7 @@ public class BidAgent {
             bids = gopher.getList(bid.getDeliveryRequestID());
         } catch (SQLException ex) {
             System.out.println("Unable to retrieve list from database");
+            code = ExitCode.SQL_EXCEPTION;
         }
         
         // Determine if any bid was created by the same courier
@@ -60,16 +61,23 @@ public class BidAgent {
         }
         
         // Only insert the new bid of it is unique to the request/courier
-        if (isUnique && isValidInsert(bid)) {
-            try {
+        if (isUnique) {
+            // Only insert the new bid if it is contextually valid
+            if (isValidInsert(bid)) {
+                try {
                 gopher.insert(bid);
                 code = ExitCode.SUCCESS;
-            } catch (SQLException ex) {
+                } catch (SQLException ex) {
                 System.out.println("Unable to insert new bid");
                 code = ExitCode.SQL_EXCEPTION;
+                }
+            } else {
+                code = ExitCode.BID_INVALID;
             }
+        } else {
+            code = ExitCode.BID_DUPLICATE;
         }
-            
+        System.out.println("BidAgent: returns code " + code.toString());
         return code;
     }
     
@@ -122,7 +130,7 @@ public class BidAgent {
                     && bid.getPickUpTime().before(bid.getDropOffTime())
                     && 0 <= bid.getFee());
         }
-        System.out.println("DEBUG: Bid invalid for insert? " + isValid);
+        System.out.println("DEBUG: Bid valid for insert? " + isValid);
         return isValid;
     }
     
