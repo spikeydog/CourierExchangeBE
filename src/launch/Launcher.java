@@ -61,9 +61,9 @@ public class Launcher {
         {
              try {
             RatingServer rs = new RatingServerFinal();
-            RatingServer rateStub = (RatingServerFinal) UnicastRemoteObject
+            RatingServer rateStub = (RatingServer) UnicastRemoteObject
                     .exportObject(rs, 0);
-            registry.rebind(Server.RMI_BINDING.name, rs);
+            registry.rebind(Server.RMI_BINDING.name, rateStub);
         } catch (RemoteException ex) {
             System.out.println("Unable to bind BiddingServer");
             ex.printStackTrace();
