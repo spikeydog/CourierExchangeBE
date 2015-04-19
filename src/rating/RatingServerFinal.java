@@ -5,7 +5,8 @@
  */
 package rating;
 
-import common.delivery.DeliveryRequest;
+import common.rating.Rating;
+import common.rating.RatingServer;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -17,7 +18,6 @@ import java.util.logging.Logger;
  */
 public class RatingServerFinal implements RatingServer{
 
-    @Override
     public Rating insertRating(Rating rating) throws RemoteException {
         RatingAgent ratingAgent = new RatingAgent();
         try {

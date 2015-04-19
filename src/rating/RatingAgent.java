@@ -5,9 +5,8 @@
  */
 package rating;
 
-import common.bidding.Bid;
+import common.rating.Rating;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  *

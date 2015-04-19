@@ -1,7 +1,8 @@
 
 package rating;
 
-import common.bidding.Bid;
+import common.rating.Rating;
+import common.rating.RatingCE;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -27,7 +28,6 @@ public class RatingGopher extends gopher.AbstractGopher {
         
         query.append("INSERT INTO ").append(TABLE_NAME).append(" VALUES(");
         values.add(DEFAULT);
-        values.add(String.valueOf(rating.getRatingID()));
         values.add(String.valueOf(rating.getDeliveryRequestID()));
         values.add(String.valueOf(rating.getCustomerOverallRating()));
         values.add(String.valueOf(rating.getCustomerProfesionalismRating()));
