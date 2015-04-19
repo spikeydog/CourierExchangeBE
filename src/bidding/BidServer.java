@@ -27,8 +27,13 @@ public class BidServer implements BiddingServer {
     }
     
     public ExitCode updateBid(Bid bid) throws RemoteException {
+        // Default, mysterious exit code to be overwritten
         ExitCode code = ExitCode.FAILURE;
+        // The agent to handle this request
+        BidAgent agent = new BidAgent();
         
+        code = agent.update(bid);
+
         return code;
     }
     

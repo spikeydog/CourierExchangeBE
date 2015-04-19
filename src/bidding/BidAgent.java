@@ -93,6 +93,60 @@ public class BidAgent {
         TEST_DATA.setBidID(DeliveryRequestCE.DEFAULT_BID_ID);
     };
     
+    public ExitCode update(final Bid bid) {
+        // Enum indicating success of the requested database operation
+        ExitCode code = ExitCode.FAILURE;
+        // BidGopher that will interact with the database
+        BidGopher gopher = new BidGopher();
+        // Flag indicating the bid is valid as an insert
+        boolean isValid = false;
+        // The bid currently stored in the database
+        Bid storedBid = null;
+        // The update flag bid
+        Bid flaggedBid = new BidCE();
+        // The bid custodian to store the updated bid temporarily
+        BidCustodian custodian = null;
+        
+        // Get the currently-stored bid from the database
+        // If it is not accepted already... 
+        // And the given bid is valid (as an insert)...
+        // And the given bid is valid as an update... 
+        // Create a shallow bid to set the update flag
+        // Update the stored bid to be isPendingUpdate
+        // Create a bid custodian with the new bid data
+        // Return successful code
+        try {
+            storedBid = gopher.get(bid.getBidID());
+        } catch (SQLException ex) {
+            code = ExitCode.SQL_EXCEPTION;
+        }
+        
+        // Verify the bid has not already been accepted
+        if (!storedBid.isAccepted()) {
+            // Verify the bid is valid for inserting and updating
+            if (isValidInsert(bid) && isValidUpdate(storedBid, bid)) {
+                flaggedBid.setBidID(storedBid.getBidID());
+                flaggedBid.setIsPendingUpdate(true);
+            
+                // Set the current bid as pending update
+                try {
+                    gopher.update(flaggedBid);
+                } catch (SQLException ex) {
+                    code = ExitCode.SQL_EXCEPTION;
+                }
+                
+                custodian = new BidCustodian(bid);
+                code = ExitCode.SUCCESS;
+            } else {
+                code = ExitCode.BID_INVALID;
+            }
+        } else {
+            code = ExitCode.BID_ACCEPTED;
+        }
+        
+        return code;
+    }
+    
     /**
      * Helper method to insert() that checks the state of the given <code>Bid
      * </code> is conditionally valid.
@@ -134,6 +188,30 @@ public class BidAgent {
         }
         System.out.println("DEBUG: Bid valid for insert? " + isValid);
         return isValid;
+    }
+    
+    /**
+     * Helper method that checks that the updated bid information provides a 
+     * higher level of service than the original. This allows for either a 
+     * faster pick up or drop off time and/or lower fee.
+     * 
+     * @param original  the original <code>Bid</code>
+     * @param update    the updated <code>Bid</code>
+     * @return boolean
+     */
+    private boolean isValidUpdate(Bid original, Bid update) {
+        // Validity flag
+        boolean isValidUpdate = false;
+        
+        if (((update.getPickUpTime().before(original.getPickUpTime()))
+                || update.getPickUpTime().equals(original.getPickUpTime()))
+                && (update.getDropOffTime().before(original.getDropOffTime())
+                || update.getDropOffTime().equals(original.getDropOffTime()))
+                && (update.getFee() <= original.getFee())) {
+            isValidUpdate = true;  
+        }
+        
+        return isValidUpdate;
     }
     
     /**
