@@ -50,7 +50,7 @@ public abstract class AbstractGopher {
 
         try {
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://192.168.56.103:3306/courier", 
+                    "jdbc:mysql://localhost/courier", 
                     "team4","qwe123");
         } catch (SQLException ex) {
             System.err.println("Unable to connect to the database.");
