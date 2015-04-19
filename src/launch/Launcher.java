@@ -5,13 +5,14 @@
  */
 package launch;
 
-import common.rating.RatingCE;
+import bidding.BidServer;
+import common.bidding.BiddingServer;
+import common.rating.RatingServer;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
-import rating.RatingAgent;
-import rating.RatingGopher;
 import rating.RatingServerFinal;
 import rating.Server;
 
@@ -26,17 +27,17 @@ public class Launcher {
         // The RMI registry that allows clients to obtain server stubs
         Registry registry;
         
-            RatingAgent ra = new RatingAgent();
-            RatingGopher rg = new RatingGopher();
-            RatingCE rate = new RatingCE();
-            rate.setRatingID(1);
-            rate.setDeliveryRequestID(1);
-            rate.setCustomerOverallRating(1);
-            rate.setCustomerProfesionalismRating(1);
-            rate.setCustomerDeliveryPersonRating(1);
+            //RatingAgent ra = new RatingAgent();
+            //RatingGopher rg = new RatingGopher();
+            //RatingCE rate = new RatingCE();
+            //rate.setRatingID(1);
+            //rate.setDeliveryRequestID(1);
+            //rate.setCustomerOverallRating(1);
+            //rate.setCustomerProfesionalismRating(1);
+            //rate.setCustomerDeliveryPersonRating(1);
             
             //rg.insert(rate);
-            ra.insert(rate);
+            //ra.insert(rate);
             
 
             
@@ -46,24 +47,37 @@ public class Launcher {
             registry = LocateRegistry.createRegistry(RMI_PORT);
             //launchUserServer(registry);
             //launchDeliveryServer(registry);
-           // launchBidServer(registry);
+            launchBidServer(registry);
             //launchTrackingServer(registry);
             launchRatingServer(registry);
             
         } catch (RemoteException ex) {
             System.out.println("Unable to locate Registry");
-        }
-               
-
+            ex.printStackTrace();
+        } 
     }
         
-        public static void launchRatingServer(final Registry registry)
+        private static void launchRatingServer(final Registry registry)
         {
              try {
-            RatingServerFinal rs = new RatingServerFinal();
-            //RatingServerFinal rateStub = (RatingServerFinal) UnicastRemoteObject
-              //      .exportObject(rs, 0);
+            RatingServer rs = new RatingServerFinal();
+            RatingServer rateStub = (RatingServerFinal) UnicastRemoteObject
+                    .exportObject(rs, 0);
             registry.rebind(Server.RMI_BINDING.name, rs);
+        } catch (RemoteException ex) {
+            System.out.println("Unable to bind BiddingServer");
+            ex.printStackTrace();
+        }
+        System.out.println("Rating Server bound successfully");
+        }
+        
+        private static void launchBidServer(final Registry registry)
+        {
+             try {
+            BiddingServer server = new BidServer();
+            BiddingServer bidStub = (BiddingServer) UnicastRemoteObject
+                  .exportObject(server, 0);
+            registry.rebind(common.bidding.Server.RMI_BINDING.name, bidStub);
         } catch (RemoteException ex) {
             System.out.println("Unable to bind BiddingServer");
             ex.printStackTrace();
