@@ -49,7 +49,7 @@ public class Launcher {
             //launchDeliveryServer(registry);
             launchBidServer(registry);
             //launchTrackingServer(registry);
-            launchRatingServer(registry);
+            //launchRatingServer(registry);
             
         } catch (RemoteException ex) {
             System.out.println("Unable to locate Registry");
@@ -57,33 +57,31 @@ public class Launcher {
         } 
     }
         
-        private static void launchRatingServer(final Registry registry)
-        {
-             try {
-            RatingServer rs = new RatingServerFinal();
-            RatingServer rateStub = (RatingServer) UnicastRemoteObject
-                    .exportObject(rs, 0);
-            registry.rebind(Server.RMI_BINDING.name, rateStub);
-        } catch (RemoteException ex) {
-            System.out.println("Unable to bind BiddingServer");
-            ex.printStackTrace();
-        }
-        System.out.println("Rating Server bound successfully");
-        }
-        
-        private static void launchBidServer(final Registry registry)
-        {
-             try {
-            BiddingServer server = new BidServer();
-            BiddingServer bidStub = (BiddingServer) UnicastRemoteObject
-                  .exportObject(server, 0);
-            registry.rebind(common.bidding.Server.RMI_BINDING.name, bidStub);
-        } catch (RemoteException ex) {
-            System.out.println("Unable to bind BiddingServer");
-            ex.printStackTrace();
-        }
-        System.out.println("Bidding Server bound successfully");
-        }
-    
-    
+    private static void launchRatingServer(final Registry registry)
+    {
+         try {
+        RatingServer rs = new RatingServerFinal();
+        RatingServer rateStub = (RatingServer) UnicastRemoteObject
+                .exportObject(rs, 0);
+        registry.rebind(common.rating.Server.RMI_BINDING.name, rateStub);
+    } catch (RemoteException ex) {
+        System.out.println("Unable to bind BiddingServer");
+        ex.printStackTrace();
+    }
+    System.out.println("Rating Server bound successfully");
+    }
+
+    private static void launchBidServer(final Registry registry)
+    {
+         try {
+        BiddingServer server = new BidServer();
+        BiddingServer bidStub = (BiddingServer) UnicastRemoteObject
+              .exportObject(server, 0);
+        registry.rebind("biddingServer", bidStub);
+    } catch (RemoteException ex) {
+        System.out.println("Unable to bind BiddingServer");
+        ex.printStackTrace();
+    }
+    System.out.println("Bidding Server bound successfully");
+    }
 }

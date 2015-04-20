@@ -115,16 +115,19 @@ public class BidAgent {
         // Update the stored bid to be isPendingUpdate
         // Create a bid custodian with the new bid data
         // Return successful code
+        System.out.println("DEBUG: BidAgent.update() called");
         try {
             storedBid = gopher.get(bid.getBidID());
+            System.out.println("DEBUG: " + storedBid.toString());
         } catch (SQLException ex) {
             code = ExitCode.SQL_EXCEPTION;
+            System.out.println("DEBUG: getting stale bid from DB failed");
         }
         
         // Verify the bid has not already been accepted
         if (!storedBid.isAccepted()) {
             // Verify the bid is valid for inserting and updating
-            if (isValidInsert(bid) && isValidUpdate(storedBid, bid)) {
+            if (isValidUpdate(storedBid, bid)) {
                 flaggedBid.setBidID(storedBid.getBidID());
                 flaggedBid.setIsPendingUpdate(true);
             
@@ -133,17 +136,29 @@ public class BidAgent {
                     gopher.update(flaggedBid);
                 } catch (SQLException ex) {
                     code = ExitCode.SQL_EXCEPTION;
-                }
+                    System.out.println("DEBUG: flagging bid failed");
+                } catch (Exception ex) { System.out.println("DEBUG: WTF"); } 
                 
-                custodian = new BidCustodian(bid);
+                Thread t = new Thread(new BidCustodian(bid));
+                t.start();
+                
                 code = ExitCode.SUCCESS;
+            //} else if (bid.getBidID() == 13) { // DEBUG REMOVE
+              //  Thread t = new Thread(new BidCustodian(bid));
+              //  t.start();
+                //ExecutorService exec = Executors.newFixedThreadPool(1);
+                //exec.execute(new BidCustodian(bid));
+                //custodian.run();
+              //  code = ExitCode.SUCCESS;
+              //  System.out.println("DEBUG: forced update of 13");
+                
             } else {
                 code = ExitCode.BID_INVALID;
             }
         } else {
             code = ExitCode.BID_ACCEPTED;
         }
-        
+        System.out.println("DEBUG: BidAgent returning " + code.toString());
         return code;
     }
     
@@ -170,6 +185,7 @@ public class BidAgent {
                 && null != bid.getDropOffTime() 
                 && null != bid.getPickUpTime() 
                 && bid.getFee() == bid.getFee()
+                && BidCE.DEFAULT_BID_ID == bid.getBidID()
                 && BidCE.DEFAULT_COURIER_ID != bid.getCourierID()
                 && BidCE.DEFAULT_REQ_ID != bid.getDeliveryRequestID()) {
             isPopulated = true;
@@ -180,7 +196,7 @@ public class BidAgent {
             //delivery = reqAgent.get(delivery);
             delivery = TEST_DATA; // Dummy data for testing
             isValid = (null != delivery 
-                    && DeliveryRequestCE.DEFAULT_BID_ID == delivery.getBidID()
+                    //&& DeliveryRequestCE.DEFAULT_BID_ID == delivery.getBidID()
                     && delivery.getPostTime().before(bid.getPickUpTime())
                     && delivery.getPostTime().before(bid.getDropOffTime())
                     && bid.getPickUpTime().before(bid.getDropOffTime())
@@ -232,7 +248,7 @@ public class BidAgent {
         } catch (SQLException ex) {
             System.out.println("Requested bid does not exist");
         }
-        System.out.println(null==record? "Null!!" : "OK!");
+        
         return record;
     }
     
@@ -244,7 +260,7 @@ public class BidAgent {
         BidGopher gopher = new BidGopher();
         
         // We should check to see if the DR still shows as posted... 
-        System.out.println("BidAgent: getList called");
+        System.out.println("DEBUG: BidAgent: getList called");
         try {
             bids = gopher.getList(request.getDeliveryRequestID());
         } catch (SQLException ex) {
@@ -252,7 +268,6 @@ public class BidAgent {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        System.out.println("Matching bids: " + bids.size());
         
         return bids;
     }
