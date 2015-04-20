@@ -19,9 +19,12 @@ import java.util.List;
  * @author sedog
  */
 public class BidServer implements BiddingServer {
-    public ExitCode acceptBid(DeliveryRequest request, Bid bid) 
+    public ExitCode acceptBid(final DeliveryRequest request, final Bid bid) 
             throws RemoteException {
         ExitCode code = ExitCode.FAILURE;
+        BidAgent agent = new BidAgent();
+        
+        code = agent.accept(request, bid);
         
         return code;
     }

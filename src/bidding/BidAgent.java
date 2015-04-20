@@ -12,6 +12,7 @@ import common.bidding.SortOrder;
 import common.delivery.DeliveryRequest;
 import common.util.code.bidding.ExitCode;
 import delivery.DeliveryRequestCE;
+import delivery.DeliveryRequestGopher;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -270,5 +271,48 @@ public class BidAgent {
         }
         
         return bids;
+    }
+    
+    public ExitCode accept(final DeliveryRequest delivery, final Bid bid) {
+        // Default bad exit code
+        ExitCode code = ExitCode.FAILURE;
+        BidGopher bidGopher = new BidGopher();
+        DeliveryRequestGopher drGopher = new DeliveryRequestGopher();
+        Bid updatedBid = new BidCE();
+        DeliveryRequest updatedDR = new DeliveryRequestCE();
+        
+        updatedBid.setBidID(bid.getBidID());
+        updatedBid.setIsAccepted(true);
+        updatedDR.setDeliveryRequestID(delivery.getDeliveryRequestID());
+        updatedDR.setBidID(bid.getBidID());
+        System.out.println("Trying");
+        
+        try {
+            Bid dbBid = bidGopher.get(bid.getBidID());
+            if ((null != dbBid) && !(dbBid.isAccepted())) {
+                DeliveryRequest dbDR;
+                dbDR = drGopher.get(delivery.getDeliveryRequestID());
+                
+                if (null != dbDR) {
+                    if (DeliveryRequestCE.DEFAULT_BID_ID == dbDR.getDeliveryRequestID()) {
+                        bidGopher.update(updatedBid);
+                        drGopher.update(updatedDR);
+                        code = ExitCode.SUCCESS;
+                    } else {
+                        code = ExitCode.REQ_INVALID;
+                    }
+                } else {
+                    code = ExitCode.REQ_NULL;
+                }
+            } else {
+                code = ExitCode.BID_ACCEPTED;
+            }
+            
+        } catch (SQLException ex) {
+            code = ExitCode.SQL_EXCEPTION;
+            throw new RuntimeException("SQLException");
+        }
+
+        return code;
     }
 }
