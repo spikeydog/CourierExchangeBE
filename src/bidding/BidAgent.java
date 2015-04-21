@@ -10,6 +10,7 @@ import common.bidding.BidCE;
 import common.bidding.SortCriterion;
 import common.bidding.SortOrder;
 import common.delivery.DeliveryRequest;
+import common.user.User;
 import common.util.code.bidding.ExitCode;
 import delivery.DeliveryRequestCE;
 import delivery.DeliveryRequestGopher;
@@ -268,6 +269,19 @@ public class BidAgent {
             System.out.println("Unable to get the bids list");
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+        
+        return bids;
+    }
+    
+    public List<Bid> getListByCourier(User courier) {
+        List<Bid> bids = null;
+        BidGopher gopher = new BidGopher();
+        
+        try {
+            gopher.getListByUserID(courier.getUserID());
+        } catch (SQLException ex) {
+            // Nothing we can do
         }
         
         return bids;
