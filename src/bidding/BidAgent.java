@@ -12,7 +12,7 @@ import common.bidding.SortOrder;
 import common.delivery.DeliveryRequest;
 import common.user.User;
 import common.util.code.bidding.ExitCode;
-import delivery.DeliveryRequestCE;
+import common.delivery.DeliveryRequestCE;
 import delivery.DeliveryRequestGopher;
 import java.sql.SQLException;
 import java.sql.Timestamp;
