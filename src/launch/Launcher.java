@@ -71,7 +71,7 @@ public class Launcher {
             registry = LocateRegistry.createRegistry(RMI_PORT);
             //launchUserServer(registry);
             //launchDeliveryServer(registry);
-           // launchBidServer(registry);
+            launchBidServer(registry);
             //launchTrackingServer(registry);
            // launchRatingServer(registry);
             

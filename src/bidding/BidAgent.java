@@ -254,23 +254,27 @@ public class BidAgent {
         return record;
     }
     
-    public List<Bid> getList(final DeliveryRequest request, 
+    public List<Bid> getList(final DeliveryRequest delivery, 
             SortCriterion criterion, SortOrder order) {
         // List of Bids to return
         List<Bid> bids = null;
         // The gopher to interact with the database
         BidGopher gopher = new BidGopher();
         
+        if (null == delivery) {
+            System.out.println("DEBUG: delivery null");
+        }
+        
         // We should check to see if the DR still shows as posted... 
         System.out.println("DEBUG: BidAgent: getList called");
         try {
-            bids = gopher.getList(request.getDeliveryRequestID());
+            bids = gopher.getList(delivery.getDeliveryRequestID());
         } catch (SQLException ex) {
             System.out.println("Unable to get the bids list");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
+        System.out.println("DEBUG:size of bids list in agent: " + bids.size());
         return bids;
     }
     
@@ -299,7 +303,7 @@ public class BidAgent {
         updatedBid.setIsAccepted(true);
         updatedDR.setDeliveryRequestID(delivery.getDeliveryRequestID());
         updatedDR.setBidID(bid.getBidID());
-        System.out.println("Trying");
+        System.out.println("Trying to accept the bid");
         
         try {
             Bid dbBid = bidGopher.get(bid.getBidID());

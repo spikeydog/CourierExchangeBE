@@ -63,7 +63,7 @@ public class BidServer implements BiddingServer {
      * @return  <code>List&#60Bid&#62</code>
      * @throws RemoteException 
      */
-    public List<Bid> listBids(DeliveryRequest request, SortCriterion criterion, 
+    public List<Bid> listBids(final DeliveryRequest request, SortCriterion criterion, 
             SortOrder order) throws RemoteException {
         // The list of bids to return
         List<Bid> bids = null;
