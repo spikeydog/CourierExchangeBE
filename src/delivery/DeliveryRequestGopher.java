@@ -112,6 +112,37 @@ public class DeliveryRequestGopher extends AbstractGopher {
         return list;
     }
     
+    //Created function implemented by Teja, to get the delivery request for a particualr bid
+    /**
+     * This method returns a list of <code>DeliveryRequest</code> objects, one
+     * for each record in the database with the given status.
+     * 
+     * @param status    the status of the delivery requests to list
+     * @return          a list of all matching <code>DeliveryRequest</code>s
+     * @throws SQLException if the operation failed
+     */
+    public DeliveryRequest getDelRequestForBid(int bidID) throws SQLException {
+        // The list to return
+        List<DeliveryRequest> list = null;
+        // The query to execute
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE BID_ID = " 
+                + bidID;
+        
+        // The raw list of results
+        List<Object> rawList = null;
+        // The converted list of results
+        List<DeliveryRequest> castList = null;
+        // The DeliveryRequest to return
+        DeliveryRequest request = null;
+       
+        rawList = super.executeQuery(query);
+        castList = convert(rawList);
+        
+        // Guarantee the list is not empty before trying to get element
+        request = (0 < castList.size())? castList.get(0) : null;          
+        return request;
+    }
+    
     /**
      * This method returns a list of <code>DeliveryRequest</code> objects, one
      * for each record in the database with the given status that is associated
