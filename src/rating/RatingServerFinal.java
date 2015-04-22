@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import common.util.code.rating.ExitCode;
 
 /**
  *
@@ -18,15 +19,28 @@ import java.util.logging.Logger;
  */
 public class RatingServerFinal implements RatingServer{
 
-    public Rating insertRating(Rating rating) throws RemoteException {
+    public ExitCode insertRating(Rating rating) throws RemoteException {
         RatingAgent ratingAgent = new RatingAgent();
+           ExitCode code = null;
         try {
-            ratingAgent.insert(rating);
+            code = ratingAgent.insert(rating);
         } catch (SQLException ex) {
             Logger.getLogger(RatingServerFinal.class.getName()).log(Level.SEVERE, null, ex);
         }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       return code;
     }
     
+    public Rating   getRating(int delReqID) throws RemoteException
+    {
+        Rating rating = null;
+        RatingAgent ratingAgent = new RatingAgent();
+        try {
+            rating = ratingAgent.getRating(delReqID);
+        } catch (SQLException ex) {
+            Logger.getLogger(RatingServerFinal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rating;
+    }
+
 }
  

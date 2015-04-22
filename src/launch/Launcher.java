@@ -6,6 +6,7 @@
 package launch;
 
 import bidding.BidServer;
+import  common.rating.Server;
 import common.bidding.BiddingServer;
 import common.rating.RatingServer;
 import java.rmi.RemoteException;
@@ -13,8 +14,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import metrics.MetricsAgent;
 import rating.RatingServerFinal;
-import rating.Server;
+
 
 /**
  * This class initializes necessary server objects within the application.
@@ -27,18 +29,40 @@ public class Launcher {
         // The RMI registry that allows clients to obtain server stubs
         Registry registry;
         
-            //RatingAgent ra = new RatingAgent();
-            //RatingGopher rg = new RatingGopher();
-            //RatingCE rate = new RatingCE();
-            //rate.setRatingID(1);
-            //rate.setDeliveryRequestID(1);
-            //rate.setCustomerOverallRating(1);
-            //rate.setCustomerProfesionalismRating(1);
-            //rate.setCustomerDeliveryPersonRating(1);
+        /*
+            Rating rating;
+            RatingAgent ra = new RatingAgent();
+            RatingGopher rg = new RatingGopher();
+            RatingCE rate = new RatingCE();
+            rate.setRatingID(1);
+            rate.setDeliveryRequestID(1);
+            rate.setCustomerOverallRating(1);
+            rate.setCustomerProfesionalismRating(1);
+            rate.setCustomerDeliveryPersonRating(1);
             
             //rg.insert(rate);
-            //ra.insert(rate);
+            ExitCode code = ra.insert(rate);
+            System.out.println("ExistCode after RA insert is "+code);
             
+            rating = ra.getRating(1000);
+            System.out.println("The rating recived from dtabase is "+rating.getRatingID()+" "+rating.getDeliveryRequestID());
+         */
+        
+        /*
+        TravellingTimeAgent pta = new TravellingTimeAgent();
+        System.out.println(pta.getPersonalTravellingTime(1,"UT","UNCC"));
+        System.out.println(pta.getOverallTravellingTime("UT","UNCC"));
+        */
+        /*
+        MetricsAgent ma = new MetricsAgent();
+        System.out.println(ma.getAverageOverallRating(1));
+        System.out.println(ma.getAverageProfesionalismRating(1));
+         System.out.println(ma.getAverageDeliveryPersonRating(1));
+         System.out.println("No of bids placed "+ma.getNoOfBidsPlaced(1));
+         System.out.println("No of deleveries completed "+ma.getNoOfDeliveriesCompleted(1));         
+         System.out.println("Percentage of good deleveries "+ma.getPercentageRequestsDeliveredOnTime(1));
+        */
+       // pta.getPersonalTravellingTime(1,"UT","UNCC");
 
             
            // RatingServerFinal rs = new RatingServerFinal();
@@ -47,9 +71,9 @@ public class Launcher {
             registry = LocateRegistry.createRegistry(RMI_PORT);
             //launchUserServer(registry);
             //launchDeliveryServer(registry);
-            launchBidServer(registry);
+           // launchBidServer(registry);
             //launchTrackingServer(registry);
-            //launchRatingServer(registry);
+           // launchRatingServer(registry);
             
         } catch (RemoteException ex) {
             System.out.println("Unable to locate Registry");
