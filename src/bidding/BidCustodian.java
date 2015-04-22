@@ -12,20 +12,24 @@ import java.sql.SQLException;
  *
  * @author sedog
  */
-public class BidCustodian extends Thread {
+public class BidCustodian implements Runnable {
     // Constant wait duration
     private final static long SLEEP_DURATION = 30000;
+    // The bid to update
+    private Bid bid;
     
     public BidCustodian(final Bid bid) {
-        go(bid);  
+        this.bid = bid;
     }
     
-    private void go(final Bid bid) {
+    public void run() {
         // The gopher to use to access the database
         BidGopher gopher = new BidGopher();
         
         try {
+            System.out.println("sleeping...");
             Thread.currentThread().sleep(SLEEP_DURATION);
+            System.out.println("awake...");
             // Verify the stored bid is not already accepted
             if (!gopher.get(bid.getBidID()).isAccepted()) {
                 gopher.update(bid);

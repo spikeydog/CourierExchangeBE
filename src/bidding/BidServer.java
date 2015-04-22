@@ -19,9 +19,12 @@ import java.util.List;
  * @author sedog
  */
 public class BidServer implements BiddingServer {
-    public ExitCode acceptBid(DeliveryRequest request, Bid bid) 
+    public ExitCode acceptBid(final DeliveryRequest request, final Bid bid) 
             throws RemoteException {
         ExitCode code = ExitCode.FAILURE;
+        BidAgent agent = new BidAgent();
+        
+        code = agent.accept(request, bid);
         
         return code;
     }
@@ -33,7 +36,7 @@ public class BidServer implements BiddingServer {
         BidAgent agent = new BidAgent();
         
         code = agent.update(bid);
-
+        System.out.println("DEBUG:BidServer.updateBid():" + code.toString());
         return code;
     }
     
@@ -72,5 +75,10 @@ public class BidServer implements BiddingServer {
         bids = agent.getList(request, criterion, order);
         
         return bids;
+    }
+    
+    public Bid getBid(final Bid bid) {
+        BidAgent agent = new BidAgent();
+        return agent.get(bid);
     }
 }

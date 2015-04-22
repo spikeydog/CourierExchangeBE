@@ -38,7 +38,7 @@ public class DeliveryRequestGopher extends AbstractGopher {
     
     @Override
     protected DeliveryRequest parseResult(ResultSet results) {
-        DeliveryRequest request = new DeliveryRequestCE();
+        DeliveryRequest request = new common.delivery.DeliveryRequestCE();
         
         try {
             request.setBidID(results.getInt(BID_ID));
@@ -235,7 +235,7 @@ public class DeliveryRequestGopher extends AbstractGopher {
         query.append("UPDATE ").append(TABLE_NAME).append(" SET ");
         
         // Include a column=value pair for each existing, non-default attribute
-        if (DeliveryRequestCE.DEFAULT_BID_ID != bidID) {
+        if (common.delivery.DeliveryRequestCE.DEFAULT_BID_ID != bidID) {
             params.add(BID_ID + "=" + bidID);
         }
         if (null != description) {
