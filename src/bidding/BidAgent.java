@@ -291,6 +291,18 @@ public class BidAgent {
         return bids;
     }
     
+    public Bid getBidByCourierIDDeliveryID(User courier, DeliveryRequest delivery) {
+        BidGopher bidGopher = new BidGopher();
+        Bid bid = null;
+        try {
+            bid = bidGopher.getBidByUserIDDeliveryRequestID(courier.getUserID(), delivery.getDeliveryRequestID());
+        } catch (SQLException ex) {
+            
+        }
+        
+        return bid; 
+    }
+    
     public ExitCode accept(final DeliveryRequest delivery, final Bid bid) {
         // Default bad exit code
         ExitCode code = ExitCode.FAILURE;

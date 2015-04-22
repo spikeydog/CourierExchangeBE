@@ -10,6 +10,7 @@ import common.bidding.BiddingServer;
 import common.bidding.SortCriterion;
 import common.bidding.SortOrder;
 import common.delivery.DeliveryRequest;
+import common.user.User;
 import common.util.code.bidding.ExitCode;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -80,5 +81,12 @@ public class BidServer implements BiddingServer {
     public Bid getBid(final Bid bid) {
         BidAgent agent = new BidAgent();
         return agent.get(bid);
+    }
+    
+    public Bid getBidByCourierIDDeliveryID(User user, DeliveryRequest dr) {
+        BidAgent agent = new BidAgent();
+        Bid bid = agent.getBidByCourierIDDeliveryID(user, dr);
+        
+        return bid;
     }
 }
