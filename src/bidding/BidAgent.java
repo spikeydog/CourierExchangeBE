@@ -85,16 +85,6 @@ public class BidAgent {
         return code;
     }
     
-    // DEBUG test data
-    private static final DeliveryRequest TEST_DATA = new DeliveryRequestCE();
-    static {
-        TEST_DATA.setDeliveryRequestID(23);
-        TEST_DATA.setPostTime(new Timestamp(System.currentTimeMillis() - 36000 * 3));
-        TEST_DATA.setPickUpTime(new Timestamp(System.currentTimeMillis() - 36000 * 2));
-        TEST_DATA.setDropOffTime(new Timestamp(System.currentTimeMillis() - 36000));
-        TEST_DATA.setBidID(DeliveryRequestCE.DEFAULT_BID_ID);
-    };
-    
     public ExitCode update(final Bid bid) {
         // Enum indicating success of the requested database operation
         ExitCode code = ExitCode.FAILURE;
@@ -179,9 +169,9 @@ public class BidAgent {
         // Empty delivery request for agent query
         DeliveryRequest delivery = new DeliveryRequestCE();
         // Agent responsible for delivery request access
-        /*
-        DeliveryRequestAgent reqAgent = new DeliveryRequestAGent();
-        */
+        
+        DeliveryRequestGopher drGopher = new DeliveryRequestGopher();
+        
         
         if (null != bid 
                 && null != bid.getDropOffTime() 
@@ -195,8 +185,12 @@ public class BidAgent {
         
         if (isPopulated) {
             delivery.setDeliveryRequestID(bid.getDeliveryRequestID());
-            //delivery = reqAgent.get(delivery);
-            delivery = TEST_DATA; // Dummy data for testing
+            try {
+                delivery = drGopher.get(delivery.getDeliveryRequestID());
+            } catch (SQLException ex) {
+                // do nothign
+            }
+            
             isValid = (null != delivery 
                     //&& DeliveryRequestCE.DEFAULT_BID_ID == delivery.getBidID()
                     && delivery.getPostTime().before(bid.getPickUpTime())
