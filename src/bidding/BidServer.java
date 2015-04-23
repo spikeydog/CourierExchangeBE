@@ -10,6 +10,7 @@ import common.bidding.BiddingServer;
 import common.bidding.SortCriterion;
 import common.bidding.SortOrder;
 import common.delivery.DeliveryRequest;
+import common.user.User;
 import common.util.code.bidding.ExitCode;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -19,9 +20,12 @@ import java.util.List;
  * @author sedog
  */
 public class BidServer implements BiddingServer {
-    public ExitCode acceptBid(DeliveryRequest request, Bid bid) 
+    public ExitCode acceptBid(final DeliveryRequest request, final Bid bid) 
             throws RemoteException {
         ExitCode code = ExitCode.FAILURE;
+        BidAgent agent = new BidAgent();
+        
+        code = agent.accept(request, bid);
         
         return code;
     }
@@ -33,7 +37,7 @@ public class BidServer implements BiddingServer {
         BidAgent agent = new BidAgent();
         
         code = agent.update(bid);
-
+        System.out.println("DEBUG:BidServer.updateBid():" + code.toString());
         return code;
     }
     
@@ -60,7 +64,7 @@ public class BidServer implements BiddingServer {
      * @return  <code>List&#60Bid&#62</code>
      * @throws RemoteException 
      */
-    public List<Bid> listBids(DeliveryRequest request, SortCriterion criterion, 
+    public List<Bid> listBids(final DeliveryRequest request, SortCriterion criterion, 
             SortOrder order) throws RemoteException {
         // The list of bids to return
         List<Bid> bids = null;
@@ -72,5 +76,17 @@ public class BidServer implements BiddingServer {
         bids = agent.getList(request, criterion, order);
         
         return bids;
+    }
+    
+    public Bid getBid(final Bid bid) {
+        BidAgent agent = new BidAgent();
+        return agent.get(bid);
+    }
+    
+    public Bid getBidByCourierIDDeliveryID(User user, DeliveryRequest dr) {
+        BidAgent agent = new BidAgent();
+        Bid bid = agent.getBidByCourierIDDeliveryID(user, dr);
+        
+        return bid;
     }
 }

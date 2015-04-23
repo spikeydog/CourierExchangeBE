@@ -38,7 +38,7 @@ public class DeliveryRequestGopher extends AbstractGopher {
     
     @Override
     protected DeliveryRequest parseResult(ResultSet results) {
-        DeliveryRequest request = new DeliveryRequestCE();
+        DeliveryRequest request = new common.delivery.DeliveryRequestCE();
         
         try {
             request.setBidID(results.getInt(BID_ID));
@@ -110,6 +110,37 @@ public class DeliveryRequestGopher extends AbstractGopher {
         list = convert(rawList);
         
         return list;
+    }
+    
+    //Created function implemented by Teja, to get the delivery request for a particualr bid
+    /**
+     * This method returns a list of <code>DeliveryRequest</code> objects, one
+     * for each record in the database with the given status.
+     * 
+     * @param status    the status of the delivery requests to list
+     * @return          a list of all matching <code>DeliveryRequest</code>s
+     * @throws SQLException if the operation failed
+     */
+    public DeliveryRequest getDelRequestForBid(int bidID) throws SQLException {
+        // The list to return
+        List<DeliveryRequest> list = null;
+        // The query to execute
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE BID_ID = " 
+                + bidID;
+        
+        // The raw list of results
+        List<Object> rawList = null;
+        // The converted list of results
+        List<DeliveryRequest> castList = null;
+        // The DeliveryRequest to return
+        DeliveryRequest request = null;
+       
+        rawList = super.executeQuery(query);
+        castList = convert(rawList);
+        
+        // Guarantee the list is not empty before trying to get element
+        request = (0 < castList.size())? castList.get(0) : null;          
+        return request;
     }
     
     /**
@@ -204,7 +235,7 @@ public class DeliveryRequestGopher extends AbstractGopher {
         query.append("UPDATE ").append(TABLE_NAME).append(" SET ");
         
         // Include a column=value pair for each existing, non-default attribute
-        if (DeliveryRequestCE.DEFAULT_BID_ID != bidID) {
+        if (common.delivery.DeliveryRequestCE.DEFAULT_BID_ID != bidID) {
             params.add(BID_ID + "=" + bidID);
         }
         if (null != description) {

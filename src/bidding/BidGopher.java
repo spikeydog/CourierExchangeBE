@@ -194,6 +194,26 @@ public class BidGopher extends AbstractGopher {
         return list;
     }
     
+    public Bid getBidByUserIDDeliveryRequestID(int userID, int deliveryID) throws SQLException {
+        // The query to execute
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COURIER_ID + "="
+                + String.valueOf(userID) + " AND " + REQ_ID + "=" + String.valueOf(deliveryID);
+        // The raw list of results
+        List<Object> rawList = null;
+        // The converted list of results
+        List<Bid> castList = null;
+        // The Bid to return
+        Bid bid = null;
+       
+        rawList = super.executeQuery(query);
+        castList = convert(rawList);
+        
+        // Guarantee the list is not empty before trying to get element
+        bid = (0 < castList.size())? castList.get(0) : null;  
+        
+        return bid;
+    }
+    
     /**
      * Updates an exiting bid record with data extracted from the
      * given <code>Bid</code>.

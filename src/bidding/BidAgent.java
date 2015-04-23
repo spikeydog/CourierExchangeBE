@@ -10,8 +10,10 @@ import common.bidding.BidCE;
 import common.bidding.SortCriterion;
 import common.bidding.SortOrder;
 import common.delivery.DeliveryRequest;
+import common.user.User;
 import common.util.code.bidding.ExitCode;
-import delivery.DeliveryRequestCE;
+import common.delivery.DeliveryRequestCE;
+import delivery.DeliveryRequestGopher;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -83,16 +85,6 @@ public class BidAgent {
         return code;
     }
     
-    // DEBUG test data
-    private static final DeliveryRequest TEST_DATA = new DeliveryRequestCE();
-    static {
-        TEST_DATA.setDeliveryRequestID(23);
-        TEST_DATA.setPostTime(new Timestamp(System.currentTimeMillis() - 36000 * 3));
-        TEST_DATA.setPickUpTime(new Timestamp(System.currentTimeMillis() - 36000 * 2));
-        TEST_DATA.setDropOffTime(new Timestamp(System.currentTimeMillis() - 36000));
-        TEST_DATA.setBidID(DeliveryRequestCE.DEFAULT_BID_ID);
-    };
-    
     public ExitCode update(final Bid bid) {
         // Enum indicating success of the requested database operation
         ExitCode code = ExitCode.FAILURE;
@@ -115,16 +107,19 @@ public class BidAgent {
         // Update the stored bid to be isPendingUpdate
         // Create a bid custodian with the new bid data
         // Return successful code
+        System.out.println("DEBUG: BidAgent.update() called");
         try {
             storedBid = gopher.get(bid.getBidID());
+            System.out.println("DEBUG: " + storedBid.toString());
         } catch (SQLException ex) {
             code = ExitCode.SQL_EXCEPTION;
+            System.out.println("DEBUG: getting stale bid from DB failed");
         }
         
         // Verify the bid has not already been accepted
         if (!storedBid.isAccepted()) {
             // Verify the bid is valid for inserting and updating
-            if (isValidInsert(bid) && isValidUpdate(storedBid, bid)) {
+            if (isValidUpdate(storedBid, bid)) {
                 flaggedBid.setBidID(storedBid.getBidID());
                 flaggedBid.setIsPendingUpdate(true);
             
@@ -133,17 +128,29 @@ public class BidAgent {
                     gopher.update(flaggedBid);
                 } catch (SQLException ex) {
                     code = ExitCode.SQL_EXCEPTION;
-                }
+                    System.out.println("DEBUG: flagging bid failed");
+                } catch (Exception ex) { System.out.println("DEBUG: WTF"); } 
                 
-                custodian = new BidCustodian(bid);
+                Thread t = new Thread(new BidCustodian(bid));
+                t.start();
+                
                 code = ExitCode.SUCCESS;
+            //} else if (bid.getBidID() == 13) { // DEBUG REMOVE
+              //  Thread t = new Thread(new BidCustodian(bid));
+              //  t.start();
+                //ExecutorService exec = Executors.newFixedThreadPool(1);
+                //exec.execute(new BidCustodian(bid));
+                //custodian.run();
+              //  code = ExitCode.SUCCESS;
+              //  System.out.println("DEBUG: forced update of 13");
+                
             } else {
                 code = ExitCode.BID_INVALID;
             }
         } else {
             code = ExitCode.BID_ACCEPTED;
         }
-        
+        System.out.println("DEBUG: BidAgent returning " + code.toString());
         return code;
     }
     
@@ -162,14 +169,15 @@ public class BidAgent {
         // Empty delivery request for agent query
         DeliveryRequest delivery = new DeliveryRequestCE();
         // Agent responsible for delivery request access
-        /*
-        DeliveryRequestAgent reqAgent = new DeliveryRequestAGent();
-        */
+        
+        DeliveryRequestGopher drGopher = new DeliveryRequestGopher();
+        
         
         if (null != bid 
                 && null != bid.getDropOffTime() 
                 && null != bid.getPickUpTime() 
                 && bid.getFee() == bid.getFee()
+                && BidCE.DEFAULT_BID_ID == bid.getBidID()
                 && BidCE.DEFAULT_COURIER_ID != bid.getCourierID()
                 && BidCE.DEFAULT_REQ_ID != bid.getDeliveryRequestID()) {
             isPopulated = true;
@@ -177,10 +185,14 @@ public class BidAgent {
         
         if (isPopulated) {
             delivery.setDeliveryRequestID(bid.getDeliveryRequestID());
-            //delivery = reqAgent.get(delivery);
-            delivery = TEST_DATA; // Dummy data for testing
+            try {
+                delivery = drGopher.get(delivery.getDeliveryRequestID());
+            } catch (SQLException ex) {
+                // do nothign
+            }
+            
             isValid = (null != delivery 
-                    && DeliveryRequestCE.DEFAULT_BID_ID == delivery.getBidID()
+                    //&& DeliveryRequestCE.DEFAULT_BID_ID == delivery.getBidID()
                     && delivery.getPostTime().before(bid.getPickUpTime())
                     && delivery.getPostTime().before(bid.getDropOffTime())
                     && bid.getPickUpTime().before(bid.getDropOffTime())
@@ -232,28 +244,99 @@ public class BidAgent {
         } catch (SQLException ex) {
             System.out.println("Requested bid does not exist");
         }
-        System.out.println(null==record? "Null!!" : "OK!");
+        
         return record;
     }
     
-    public List<Bid> getList(final DeliveryRequest request, 
+    public List<Bid> getList(final DeliveryRequest delivery, 
             SortCriterion criterion, SortOrder order) {
         // List of Bids to return
         List<Bid> bids = null;
         // The gopher to interact with the database
         BidGopher gopher = new BidGopher();
         
+        if (null == delivery) {
+            System.out.println("DEBUG: delivery null");
+        }
+        
         // We should check to see if the DR still shows as posted... 
-        System.out.println("BidAgent: getList called");
+        System.out.println("DEBUG: BidAgent: getList called");
         try {
-            bids = gopher.getList(request.getDeliveryRequestID());
+            bids = gopher.getList(delivery.getDeliveryRequestID());
         } catch (SQLException ex) {
             System.out.println("Unable to get the bids list");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        System.out.println("Matching bids: " + bids.size());
+        System.out.println("DEBUG:size of bids list in agent: " + bids.size());
+        return bids;
+    }
+    
+    public List<Bid> getListByCourier(User courier) {
+        List<Bid> bids = null;
+        BidGopher gopher = new BidGopher();
+        
+        try {
+            gopher.getListByUserID(courier.getUserID());
+        } catch (SQLException ex) {
+            // Nothing we can do
+        }
         
         return bids;
+    }
+    
+    public Bid getBidByCourierIDDeliveryID(User courier, DeliveryRequest delivery) {
+        BidGopher bidGopher = new BidGopher();
+        Bid bid = null;
+        try {
+            bid = bidGopher.getBidByUserIDDeliveryRequestID(courier.getUserID(), delivery.getDeliveryRequestID());
+        } catch (SQLException ex) {
+            
+        }
+        
+        return bid; 
+    }
+    
+    public ExitCode accept(final DeliveryRequest delivery, final Bid bid) {
+        // Default bad exit code
+        ExitCode code = ExitCode.FAILURE;
+        BidGopher bidGopher = new BidGopher();
+        DeliveryRequestGopher drGopher = new DeliveryRequestGopher();
+        Bid updatedBid = new BidCE();
+        DeliveryRequest updatedDR = new DeliveryRequestCE();
+        
+        updatedBid.setBidID(bid.getBidID());
+        updatedBid.setIsAccepted(true);
+        updatedDR.setDeliveryRequestID(delivery.getDeliveryRequestID());
+        updatedDR.setBidID(bid.getBidID());
+        System.out.println("Trying to accept the bid");
+        
+        try {
+            Bid dbBid = bidGopher.get(bid.getBidID());
+            if ((null != dbBid) && !(dbBid.isAccepted())) {
+                DeliveryRequest dbDR;
+                dbDR = drGopher.get(delivery.getDeliveryRequestID());
+                
+                if (null != dbDR) {
+                    if (DeliveryRequestCE.DEFAULT_BID_ID == dbDR.getDeliveryRequestID()) {
+                        bidGopher.update(updatedBid);
+                        drGopher.update(updatedDR);
+                        code = ExitCode.SUCCESS;
+                    } else {
+                        code = ExitCode.REQ_INVALID;
+                    }
+                } else {
+                    code = ExitCode.REQ_NULL;
+                }
+            } else {
+                code = ExitCode.BID_ACCEPTED;
+            }
+            
+        } catch (SQLException ex) {
+            code = ExitCode.SQL_EXCEPTION;
+            throw new RuntimeException("SQLException");
+        }
+
+        return code;
     }
 }
