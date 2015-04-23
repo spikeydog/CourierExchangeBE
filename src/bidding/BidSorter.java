@@ -10,9 +10,9 @@ import common.bidding.SortCriterion;
 import common.bidding.SortOrder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -26,6 +26,10 @@ public class BidSorter {
     
     public static List<Bid> sortBids(final List<Bid> bids, SortCriterion c, SortOrder o) {
         List<Bid> sortedBids = new ArrayList<Bid>(bids.size());
+        Timestamp time = null;
+        Iterator<Timestamp> timeIter = null;
+        
+        // Map the bids according to the chosen sort criteria
         switch (c) {
             case DROP_TIME :
                 SortedMap<Timestamp, Bid> mapD = new TreeMap<Timestamp, Bid>();
@@ -33,21 +37,37 @@ public class BidSorter {
                     mapD.put(bid.getDropOffTime(), bid);
                 }
                 
-                SortedSet<Timestamp> keysD = new TreeSet<Timestamp>(mapD.keySet());
+                TreeSet<Timestamp> keysD = new TreeSet<Timestamp>(mapD.keySet());
                 
-                for (Timestamp keyD : keysD) {
-                    sortedBids.add(mapD.get(keyD));
+                
+                if (SortOrder.DESC == o) {
+                    timeIter = keysD.descendingIterator();
+                } else {
+                    timeIter = keysD.iterator();
+                }
+                
+                while (timeIter.hasNext()) {
+                    time = timeIter.next();
+                    sortedBids.add(mapD.get(time));
                 } break;
+                
             case PICKUP_TIME :
                 SortedMap<Timestamp, Bid> mapP = new TreeMap<Timestamp, Bid>();
                 for (Bid bid : bids) {
                     mapP.put(bid.getPickUpTime(), bid);
                 }
                 
-                SortedSet<Timestamp> keysP = new TreeSet<Timestamp>(mapP.keySet());
+                TreeSet<Timestamp> keysP = new TreeSet<Timestamp>(mapP.keySet());
                 
-                for (Timestamp keyP : keysP) {
-                    sortedBids.add(mapP.get(keyP));
+                if (SortOrder.DESC == o) {
+                    timeIter = keysP.descendingIterator();
+                } else {
+                    timeIter = keysP.iterator();
+                }
+                
+                while (timeIter.hasNext()) {
+                    time = timeIter.next();
+                    sortedBids.add(mapP.get(time));
                 } break;
             default :
                 SortedMap<Float, Bid> mapF = new TreeMap<Float, Bid>();
@@ -56,12 +76,22 @@ public class BidSorter {
                     mapF.put(bid.getFee(), bid);
                 }
                 
-                SortedSet<Float> keysF = new TreeSet<Float>(mapF.keySet());
+                TreeSet<Float> keysF = new TreeSet<Float>(mapF.keySet());
+                Iterator<Float> floatIter = null;
+                Float f = null;
                 
-                for (Float keyF : keysF) {
-                    sortedBids.add(mapF.get(keyF));
+                if (SortOrder.DESC == o) {
+                    floatIter = keysF.descendingIterator();
+                } else {
+                    floatIter = keysF.descendingIterator();
+                }
+                
+                while (floatIter.hasNext()) {
+                    f = floatIter.next();
+                    sortedBids.add(mapF.get(f));
                 } break;
         }
-        return null;
+        
+        return sortedBids;
     }
 }
