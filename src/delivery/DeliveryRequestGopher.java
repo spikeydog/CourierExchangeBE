@@ -208,28 +208,28 @@ public class DeliveryRequestGopher extends AbstractGopher {
             params.add(BID_ID + "=" + bidID);
         }
         if (null != description) {
-            params.add(DESCR + "=" + description);
+            params.add(DESCR + "=" + Formatter.quote(description));
         }
         if (null != dropOffTime) {
-            params.add(DROP_TIME + "=" + dropOffTime);
+            params.add(DROP_TIME + "=" + Formatter.formatTime(dropOffTime));
         }
         if (null != dropOffAddress) {
-            params.add(DROP_ADDR + "=" + dropOffAddress);
+            params.add(DROP_ADDR + "=" + Formatter.quote(dropOffAddress));
         }
         if (null != realDropOffTime) {
-            params.add(REAL_DROP_TIME + "=" + realDropOffTime);
+            params.add(REAL_DROP_TIME + "=" + Formatter.formatTime(realDropOffTime));
         }
         if (null != pickUpTime) {
-            params.add(PICKUP_TIME + "=" + pickUpTime);
+            params.add(PICKUP_TIME + "=" + Formatter.formatTime(pickUpTime));
         }
         if (null != pickUpAddress) {
-            params.add(PICKUP_ADDR + "=" + pickUpAddress);
+            params.add(PICKUP_ADDR + "=" + Formatter.quote(pickUpAddress));
         }
         if (null != realPickUpTime) {
-            params.add(REAL_PICKUP_TIME + "=" + realPickUpTime);
+            params.add(REAL_PICKUP_TIME + "=" + Formatter.formatTime(realPickUpTime));
         }
         if (null != postTime) {
-            params.add(POST_TIME + "=" + postTime);
+            params.add(POST_TIME + "=" + Formatter.formatTime(postTime));
         }
         if (null != status) {
             params.add(STATUS + "=" + String.valueOf(status.value));
@@ -241,6 +241,7 @@ public class DeliveryRequestGopher extends AbstractGopher {
         
         query.append(params.toString().substring(1,params.toString().length() - 1));
         query.append(" WHERE ").append(REQ_ID).append("=").append(deliveryID);
+        System.out.println(query);
         super.executeQuery(query.toString());
     }
     
@@ -252,7 +253,7 @@ public class DeliveryRequestGopher extends AbstractGopher {
     public void delete(int id) throws SQLException {
         String query = "DELETE FROM " + TABLE_NAME + " WHERE " + REQ_ID
                 + "=" + id;
-        
+        System.out.println(query);
         super.executeQuery(query);
     }
     
