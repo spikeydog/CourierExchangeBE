@@ -68,6 +68,7 @@ public class BidAgent {
         
         // Only insert the new bid of it is unique to the request/courier
         if (isUnique) {
+            System.out.println("bid unique...");
             // Only insert the new bid if it is contextually valid
             if (isValidInsert(bid)) {
                 try {
@@ -174,16 +175,17 @@ public class BidAgent {
         
         DeliveryRequestGopher drGopher = new DeliveryRequestGopher();
         
-        
+        System.out.println("isValid: bid null? " + (bid==null? "true" : "false"));
         if (null != bid 
-                && null != bid.getDropOffTime() 
-                && null != bid.getPickUpTime() 
-                && bid.getFee() == bid.getFee()
-                && BidCE.DEFAULT_BID_ID == bid.getBidID()
-                && BidCE.DEFAULT_COURIER_ID != bid.getCourierID()
-                && BidCE.DEFAULT_REQ_ID != bid.getDeliveryRequestID()) {
+                && !(null == bid.getDropOffTime()) 
+                && !(null == bid.getPickUpTime()) 
+                && (bid.getFee() == bid.getFee())
+                && (BidCE.DEFAULT_BID_ID == bid.getBidID())
+                && (BidCE.DEFAULT_COURIER_ID != bid.getCourierID())
+                && (BidCE.DEFAULT_REQ_ID != bid.getDeliveryRequestID())) {
             isPopulated = true;
         }
+        System.out.println("Is Populated " + (isPopulated? "true" : "false"));
         
         if (isPopulated) {
             delivery.setDeliveryRequestID(bid.getDeliveryRequestID());
