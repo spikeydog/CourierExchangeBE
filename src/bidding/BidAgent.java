@@ -15,8 +15,8 @@ import common.util.code.bidding.ExitCode;
 import common.delivery.DeliveryRequestCE;
 import delivery.DeliveryRequestGopher;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -55,6 +55,8 @@ public class BidAgent {
         } catch (SQLException ex) {
             System.out.println("Unable to retrieve list from database");
             code = ExitCode.SQL_EXCEPTION;
+        } finally {
+            bids = (null == bids)? new LinkedList<Bid>() : bids;
         }
         
         // Determine if any bid was created by the same courier

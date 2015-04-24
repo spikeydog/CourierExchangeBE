@@ -16,7 +16,10 @@ import common.delivery.*;
 import common.rating.Rating;
 import common.rating.metrics.Metrics;
 import common.rating.metrics.MetricsCE;
+import common.user.User;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import user.UserGopher;
 
 /**
  *
@@ -26,7 +29,8 @@ public class MetricsAgent {
     
     public Metrics getMetrics(int courierID) throws SQLException
     {
-        Metrics metrics = new MetricsCE();        
+        Metrics metrics = new MetricsCE();   
+        metrics.setCourierID(courierID);
         metrics.setAverageDeliveryPersonRating(getAverageDeliveryPersonRating(courierID));
         metrics.setAverageOverallRating(getAverageOverallRating(courierID));
         metrics.setAverageProfesionalismRating(getAverageProfesionalismRating(courierID));
@@ -34,6 +38,20 @@ public class MetricsAgent {
         metrics.setPercentageRequestsDeliveredOnTime(getPercentageRequestsDeliveredOnTime(courierID));
         metrics.setTotalRequestsDelivered(getNoOfDeliveriesCompleted(courierID));        
         return metrics;
+    }
+    
+    public List<Metrics> getMetricsForAllCouriers() throws SQLException
+    {
+        UserGopher userGopher = new UserGopher();
+        List<User> courierList = userGopher.getAllCouriers();
+        List<Metrics> metricsList = new ArrayList<Metrics>();
+         
+        for(User tempUser : courierList)
+        {
+            metricsList.add(getMetrics(tempUser.getUserID()));
+        }
+        
+        return metricsList;
     }
     
     public float getAverageOverallRating(int courierID) throws SQLException
@@ -80,11 +98,9 @@ public class MetricsAgent {
         float totalNoOfDeliveries=0;
        // int user_id;
         
-        RatingGopher ratingGopher = new RatingGopher();  
         RatingAgent ratingAgent = new RatingAgent();
         DeliveryRequestGopher deliveryRequestGopher = new DeliveryRequestGopher();
         BidGopher  bidGopher = new BidGopher();
-        BidAgent bidAgent = new BidAgent();
         
         List<DeliveryRequest> deliveryRequestList =  deliveryRequestGopher.getList(0);
         
@@ -200,7 +216,11 @@ public class MetricsAgent {
         }    
            
       }
+
+     if(noOfDeleveriesCompleted != 0)
+     {
      percentageRequest = (int)(delayedDeliveries/noOfDeleveriesCompleted)*100;
+     }
      return percentageRequest;        
     }
 }

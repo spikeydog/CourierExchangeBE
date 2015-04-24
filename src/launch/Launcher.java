@@ -6,16 +6,22 @@
 package launch;
 
 import bidding.BidServer;
-import  common.rating.Server;
 import common.bidding.BiddingServer;
+import common.delivery.DeliveryServer;
 import common.rating.RatingServer;
+import common.rating.metrics.MetricsServer;
+import common.rating.travellingTime.TravellingTimeServer;
+import common.user.UserCommonServer;
+import delivery.DeliveryRequestServer;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
-import metrics.MetricsAgent;
+import metrics.MetricsServerFinal;
 import rating.RatingServerFinal;
+import travellingTime.TravellingTimeServerFinal;
+import user.UserServer;
 
 
 /**
@@ -29,51 +35,16 @@ public class Launcher {
         // The RMI registry that allows clients to obtain server stubs
         Registry registry;
         
-        /*
-            Rating rating;
-            RatingAgent ra = new RatingAgent();
-            RatingGopher rg = new RatingGopher();
-            RatingCE rate = new RatingCE();
-            rate.setRatingID(1);
-            rate.setDeliveryRequestID(1);
-            rate.setCustomerOverallRating(1);
-            rate.setCustomerProfesionalismRating(1);
-            rate.setCustomerDeliveryPersonRating(1);
-            
-            //rg.insert(rate);
-            ExitCode code = ra.insert(rate);
-            System.out.println("ExistCode after RA insert is "+code);
-            
-            rating = ra.getRating(1000);
-            System.out.println("The rating recived from dtabase is "+rating.getRatingID()+" "+rating.getDeliveryRequestID());
-         */
-        
-        /*
-        TravellingTimeAgent pta = new TravellingTimeAgent();
-        System.out.println(pta.getPersonalTravellingTime(1,"UT","UNCC"));
-        System.out.println(pta.getOverallTravellingTime("UT","UNCC"));
-        */
-        /*
-        MetricsAgent ma = new MetricsAgent();
-        System.out.println(ma.getAverageOverallRating(1));
-        System.out.println(ma.getAverageProfesionalismRating(1));
-         System.out.println(ma.getAverageDeliveryPersonRating(1));
-         System.out.println("No of bids placed "+ma.getNoOfBidsPlaced(1));
-         System.out.println("No of deleveries completed "+ma.getNoOfDeliveriesCompleted(1));         
-         System.out.println("Percentage of good deleveries "+ma.getPercentageRequestsDeliveredOnTime(1));
-        */
-       // pta.getPersonalTravellingTime(1,"UT","UNCC");
-
-            
-           // RatingServerFinal rs = new RatingServerFinal();
-        /* This will fail if the RMI service is not running */
+       /* This will fail if the RMI service is not running */
        try {
             registry = LocateRegistry.createRegistry(RMI_PORT);
             //launchUserServer(registry);
-            //launchDeliveryServer(registry);
+            launchMetricsServer(registry);
+            launchDeliveryServer(registry);
             launchBidServer(registry);
             //launchTrackingServer(registry);
-           // launchRatingServer(registry);
+            launchRatingServer(registry);
+            launchTravellingTimeServer(registry);
             
         } catch (RemoteException ex) {
             System.out.println("Unable to locate Registry");
@@ -107,5 +78,59 @@ public class Launcher {
         ex.printStackTrace();
     }
     System.out.println("Bidding Server bound successfully");
+    }
+    
+    private static void launchUserServer(final Registry registry)
+    {
+         try {
+        UserCommonServer server = new UserServer();
+        UserCommonServer bidStub = (UserCommonServer) UnicastRemoteObject
+              .exportObject(server, 0);
+        registry.rebind(common.user.Server.RMI_BINDING.name, bidStub);
+    } catch (RemoteException ex) {
+        System.out.println("Unable to bind UserServer");
+        ex.printStackTrace();
+    }
+    System.out.println("User Server bound successfully");
+    }
+    
+    private static void launchMetricsServer(final Registry registry)
+    {
+         try {
+        MetricsServer server = new MetricsServerFinal();
+        MetricsServer metricsStub = (MetricsServer) UnicastRemoteObject
+              .exportObject(server, 0);
+        registry.rebind(common.rating.metrics.Server.RMI_BINDING.name, metricsStub);
+    } catch (RemoteException ex) {
+        System.out.println("Unable to bind MetricsServer");
+        ex.printStackTrace();
+    }
+    System.out.println("Metrics Server bound successfully");
+    }
+    
+    private static void launchTravellingTimeServer(final Registry registry) {
+        try {
+            TravellingTimeServer server = new TravellingTimeServerFinal();
+            TravellingTimeServer timeStub = (TravellingTimeServer) UnicastRemoteObject
+                    .exportObject(server, 0);
+            registry.rebind(common.rating.travellingTime.Server.RMI_BINDING.name, timeStub);
+        } catch (RemoteException ex) {
+            System.out.println("Unable to bind TravelingTime Server");
+            ex.printStackTrace();
+        }
+        System.out.println("TravellingTimeServer bound successfully!");
+    }
+    
+    private static void launchDeliveryServer(final Registry registry) {
+        try {
+            DeliveryServer server = new DeliveryRequestServer();
+            DeliveryServer timeStub = (DeliveryServer) UnicastRemoteObject
+                    .exportObject(server, 0);
+            registry.rebind(common.delivery.Server.RMI_BINDING.name, timeStub);
+        } catch (RemoteException ex) {
+            System.out.println("Unable to bind Delivery Server");
+            ex.printStackTrace();
+        }
+        System.out.println("DeliveryServer bound successfully!");
     }
 }

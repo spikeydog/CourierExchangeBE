@@ -6,6 +6,7 @@
 package delivery;
 
 import common.delivery.DeliveryRequest;
+import common.delivery.DeliveryRequestCE;
 import common.delivery.DeliveryServer;
 import common.delivery.Status;
 import common.user.User;

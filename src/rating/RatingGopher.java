@@ -1,9 +1,9 @@
 
 package rating;
 
-import common.bidding.Bid;
 import common.rating.Rating;
 import common.rating.RatingCE;
+import common.user.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,10 +41,9 @@ public class RatingGopher extends gopher.AbstractGopher {
         super.executeQuery(query.toString());
     }
     
-     protected Rating parseResult(ResultSet results) throws SQLException {
-        Rating rating = new RatingCE();
-        
-        try {
+     protected Rating parseResult(ResultSet results) throws SQLException {    
+         Rating rating = new RatingCE();        
+         try {
             rating.setRatingID(results.getInt(RATING_ID));//(results.getInt(RATING_ID));
             rating.setDeliveryRequestID(results.getInt(DELIVERY_REQEUST_ID));
             rating.setCustomerOverallRating(results.getInt(OVERALL_RATING));
@@ -86,8 +85,11 @@ public class RatingGopher extends gopher.AbstractGopher {
             if (each instanceof Rating) {
                 converted.add((Rating) each);
             } 
-        }
+        }      
         
         return converted;
     }
+      
+      
+       
 }

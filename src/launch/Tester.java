@@ -10,7 +10,7 @@ import common.bidding.BidCE;
 import bidding.BidServer;
 import common.bidding.Bid;
 import common.delivery.DeliveryRequest;
-import delivery.DeliveryRequestCE;
+import common.delivery.DeliveryRequestCE;
 import java.sql.Timestamp;
 
 /**
@@ -93,8 +93,6 @@ public class Tester {
         bid2.setBidID(11);
         System.out.println("Get inserted bid? " + bidAgent.get(bid2).equals(bid1));
         DeliveryRequest req1 = new DeliveryRequestCE(); req1.setDeliveryRequestID(23);
-        for (Bid bid : bidAgent.getList(req1)) {
-            System.out.println(bid.getBidID());
-        }
+        
     }
 }

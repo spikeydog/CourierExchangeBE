@@ -136,4 +136,34 @@ public class UserGopher extends AbstractGopher{
         query.append(" WHERE ").append(UserGopher.USER_ID).append("=").append(UserID);
         super.executeQuery(query.toString());
     }
+    
+    public List<User> getAllCouriers() throws SQLException
+      {
+            String query = "SELECT * FROM " + "user" + " WHERE " + "user_type" + "="
+                + "1";
+        // The raw list of results
+        List<Object> rawList = null;
+        // The converted list of results
+        List<User> castList = null;
+        // The Bid to return
+        User request = null;
+       
+        rawList = super.executeQuery(query);
+        castList = convertToUser(rawList);
+        
+        return castList;
+          
+      }
+    
+    private List<User> convertToUser(List<Object> list) {
+        List<User> converted = new ArrayList<User>(
+                list.size());
+        for (Object each : list) {
+            if (each instanceof User) {
+                converted.add((User) each);
+            } 
+        }      
+        
+        return converted;
+    }
     }

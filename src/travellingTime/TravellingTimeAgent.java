@@ -30,7 +30,7 @@ public class TravellingTimeAgent {
         return travellingTime;        
     }
     
-    public  long getPersonalTravellingTime(int user_id,String pickUpAdress , String dropOffAdress) throws SQLException
+    public  long getPersonalTravellingTime(int user_id,String pickUpAdressPin , String dropOffAdressPin) throws SQLException
     {
         BidGopher bidGopher = new BidGopher();
         int noOfDeliveries = 0;
@@ -59,8 +59,16 @@ public class TravellingTimeAgent {
                              +deliveryRequest.getPickUpAddress()+" "+deliveryRequest.getDropOffAddress());
                     //If Bothe pickup and dropoff adress are same as mentoind by the user
                      
-                    if( deliveryRequest.getPickUpAddress().equals(pickUpAdress) &&
-                         deliveryRequest.getDropOffAddress().equals(dropOffAdress))
+                     pickUpAdressPin = pickUpAdressPin.substring(pickUpAdressPin.length()-5);
+                     dropOffAdressPin = dropOffAdressPin.substring(dropOffAdressPin.length()-5);
+                     
+                     System.out.println("The pickup passeed pin is"+pickUpAdressPin);
+                     System.out.println("The drop off passed pin is"+dropOffAdressPin);
+                     
+                     String delReqPickUpPinCode = deliveryRequest.getPickUpAddress().substring(deliveryRequest.getPickUpAddress().length()-5);
+                     String delReqDropOffPinCode = deliveryRequest.getDropOffAddress().substring(deliveryRequest.getDropOffAddress().length()-5);
+                    if( delReqPickUpPinCode.equals(pickUpAdressPin) &&
+                         delReqDropOffPinCode.equals(dropOffAdressPin))
                     {
                         
                         timeDifference = deliveryRequest.getRealPickUpTime().getTime() -  deliveryRequest.getRealDropOffTime().getTime();
@@ -71,15 +79,21 @@ public class TravellingTimeAgent {
         }      
         System.out.println("Aggreate time is "+aggreateTimeDifference);
         System.out.println("Number of deliverires is"+noOfDeliveries);
+        if(noOfDeliveries != 0)
+        {
         averagePersonlTime = aggreateTimeDifference/noOfDeliveries; 
-         System.out.println("Average Time before divisoin is "+averagePersonlTime);
-        averagePersonlTime /= (60*1000);
+         averagePersonlTime /= (60*1000);
+        }
+        else
+        {
+            averagePersonlTime = 0;
+        }
          System.out.println("Average Time time is "+averagePersonlTime+" Min");
         
         return averagePersonlTime;
     }
     
-    public  long getOverallTravellingTime(String pickUpAdress , String dropOffAdress) throws SQLException
+    public  long getOverallTravellingTime(String pickUpAdressPin , String dropOffAdressPin) throws SQLException
     {
         BidGopher bidGopher = new BidGopher();
         int noOfDeliveries = 0;
@@ -100,9 +114,15 @@ public class TravellingTimeAgent {
                      System.out.println("Printing the BID "+" "+deliveryRequest.getDeliveryRequestID()+" "
                              +deliveryRequest.getPickUpAddress()+" "+deliveryRequest.getDropOffAddress());
                     //If Bothe pickup and dropoff adress are same as mentoind by the user
+                     pickUpAdressPin = pickUpAdressPin.substring(pickUpAdressPin.length()-5);
+                     dropOffAdressPin = dropOffAdressPin.substring(dropOffAdressPin.length()-5);
                      
-                    if( deliveryRequest.getPickUpAddress().equals(pickUpAdress) &&
-                         deliveryRequest.getDropOffAddress().equals(dropOffAdress))
+                     
+                     String delReqPickUpPinCode = deliveryRequest.getPickUpAddress().substring(deliveryRequest.getPickUpAddress().length()-5);
+                     String delReqDropOffPinCode = deliveryRequest.getDropOffAddress().substring(deliveryRequest.getDropOffAddress().length()-5);
+                   
+                    if( delReqPickUpPinCode.equals(pickUpAdressPin) &&
+                        delReqDropOffPinCode.equals(dropOffAdressPin))
                     {
                         
                         timeDifference = deliveryRequest.getRealPickUpTime().getTime() -  deliveryRequest.getRealDropOffTime().getTime();
@@ -113,9 +133,16 @@ public class TravellingTimeAgent {
         }      
         System.out.println("Aggreate time is "+aggreateTimeDifference);
         System.out.println("Number of deliverires is"+noOfDeliveries);
+        if(noOfDeliveries != 0)
+        {
         averagePersonlTime = aggreateTimeDifference/noOfDeliveries; 
-         System.out.println("Average Time before divisoin is "+averagePersonlTime);
-        averagePersonlTime /= (60*1000);
+         averagePersonlTime /= (60*1000);
+        }
+        else
+        {
+            averagePersonlTime = 0;
+        }
+        // System.out.println("Average Time before divisoin is "+averagePersonlTime);       
          System.out.println("Average Time time is "+averagePersonlTime+" Min");
         
         return averagePersonlTime;

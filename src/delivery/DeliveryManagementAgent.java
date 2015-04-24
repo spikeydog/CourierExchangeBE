@@ -31,6 +31,8 @@ public class DeliveryManagementAgent {
     catch(SQLException ex)
     {
       e = ExitCode.SQL_EXCEPTION;
+      ex.printStackTrace();
+      System.err.println("SQLException trying to execute query");
        
     }
    return e;
